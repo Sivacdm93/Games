@@ -1,0 +1,384 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team VIBE</title>
+  <meta name="description" content="Vote for the next Team VIBE game and watch the nominated video." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; --accent:#7cf7ff; --good:#37d67a; --warn:#ffd166; --bad:#ff5c8a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Rubik, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink); background:radial-gradient(1200px 800px at 10% -10%, #1a2050, transparent 50%),
+                        radial-gradient(1200px 800px at 110% 10%, #35206a, transparent 50%),
+                        linear-gradient(180deg,#0b1020,#0b1020 60%, #0f1630);
+    }
+    header{
+      position:sticky; top:0; z-index:10; backdrop-filter:saturate(1.2) blur(6px);
+      background:linear-gradient(180deg, rgba(15,22,48,.85), rgba(15,22,48,.35));
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:16px;}/* MEGA TITLE */
+.brand{
+  display:flex; align-items:center; gap:16px; justify-content:space-between;
+  flex-wrap:wrap;
+}
+.title{
+  font-family:"Fugaz One", cursive; line-height:.9; margin:6px 0;
+  font-size: clamp(100px, 14vw, 160px); letter-spacing:2px; text-transform:uppercase;
+  background: conic-gradient(from 0deg, #8be9ff, #ffd166, #95ff87, #ff7eb6, #8be9ff);
+  background-size: 200% 200%;
+  -webkit-background-clip: text; background-clip:text; color: transparent;
+  filter: drop-shadow(0 8px 30px rgba(124,247,255,.25));
+  animation: hue 8s linear infinite, floaty 5s ease-in-out infinite;
+}
+@keyframes hue{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.sparkles{position:relative}
+.sparkles::after{
+  content:"✨"; font-size: clamp(28px, 5vw, 48px); position:absolute; right:-8px; top:-8px; filter:drop-shadow(0 2px 8px rgba(255,255,255,.4));
+  animation: bob 3.5s ease-in-out infinite 1s;
+}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(6deg)}}
+
+/* Top stats bar */
+.stats{display:flex; gap:12px; flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); padding:10px 14px; border-radius:999px; display:flex; gap:10px; align-items:center}
+.count{font-weight:800; padding:2px 10px; border-radius:999px; background:rgba(124,247,255,.15);}
+
+/* Layout */
+main{display:grid; gap:18px; grid-template-columns:1.1fr .9fr;}
+@media(max-width:980px){main{display:block}}
+
+/* Card */
+.card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08);
+  border-radius:18px; padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.card h2{margin:4px 0 12px; font-size:22px}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.row input[type=url], .row input[type=text]{flex:1; min-width:220px; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.15); background:#0d1330; color:var(--ink)}
+.btn{appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; color:#0b1020;
+  background:linear-gradient(135deg,#7cf7ff,#95ff87); box-shadow:0 10px 30px rgba(124,247,255,.25); transition:.2s transform}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{color:var(--ink); background:transparent; border:1px solid rgba(255,255,255,.12)}
+
+.player{position:relative; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#0a0f24; margin-top:10px; border:1px solid rgba(255,255,255,.1)}
+.player iframe, .player blockquote{position:absolute; inset:0; width:100%; height:100%}
+.overlay{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:14px; background:linear-gradient(180deg, rgba(15,22,48,.65), rgba(15,22,48,.35));
+}
+
+.grid{display:grid; gap:12px; grid-template-columns:repeat(2,1fr)}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+
+.game{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px; border-radius:14px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08)}
+.game .meta{display:flex; flex-direction:column}
+.game .name{font-weight:800}
+.game .voteRow{display:flex; align-items:center; gap:8px}
+.game input[type=text]{width:140px}
+
+.subtle{color:var(--muted); font-size:13px}
+.tag{font-size:12px; font-weight:800; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08)}
+
+/* confetti orbiters */
+.orbit{position:fixed; pointer-events:none; inset:0; overflow:hidden}
+.orb{position:absolute; width:10px; height:10px; border-radius:2px; opacity:.7; animation: drift linear infinite}
+@keyframes drift{to{transform:translate3d(var(--dx), 100vh, 0) rotate(720deg)}}
+
+.footer{margin:20px 0 60px; text-align:center; color:var(--muted); font-size:12px}
+.warn{background:rgba(255,92,138,.08); border:1px solid rgba(255,92,138,.25); color:#ffc7d6; padding:10px 12px; border-radius:12px}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap brand">
+      <div class="sparkles title">Team VIBE</div>
+      <div class="stats" id="topStats">
+        <!-- Game chips injected here -->
+      </div>
+    </div>
+  </header>  <div class="wrap" style="margin-top:10px">
+    <main>
+      <!-- LEFT: Player & links -->
+      <section class="card">
+        <h2>🎬 Event Video</h2>
+        <div class="row">
+          <input type="url" id="mediaUrl" placeholder="Paste Instagram Reel or YouTube link" />
+          <button class="btn" id="loadBtn">Load</button>
+          <button class="btn ghost" id="openBtn">Open on Platform</button>
+        </div>
+        <div class="player" id="player">
+          <div class="overlay" id="playOverlay">
+            <button class="btn" id="playBtn">▶ Play</button>
+            <span class="subtle">If playback is blocked, this will open the app/site.</span>
+          </div>
+        </div>
+        <p class="subtle" style="margin-top:10px">Tip: YouTube embeds auto-play in-page. Instagram may limit in-page playback; we’ll redirect if it can’t play.</p>
+      </section><!-- RIGHT: Voting -->
+  <section class="card">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
+      <h2>🗳️ Vote for the Game</h2>
+      <span class="tag">Multiple votes allowed</span>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <input id="newGameName" type="text" placeholder="Add a new game (e.g., Musical Chairs)" />
+      <input id="newGameUrl" type="url" placeholder="(optional) Video URL for the game" />
+      <button class="btn" id="addGameBtn">Add Game</button>
+    </div>
+    <div class="grid" id="gamesGrid" style="margin-top:12px">
+      <!-- Games injected here -->
+    </div>
+    <p class="subtle" style="margin-top:8px">We’ll ask for your name when you vote so we can tally participants.</p>
+    <div id="errorBox" class="warn" style="display:none; margin-top:10px"></div>
+  </section>
+</main>
+
+<p class="footer">Built for employee engagement & fun ✌️ – Team VIBE</p>
+
+  </div>  <!-- Orbiting confetti for ~fun~ -->  <div class="orbit" aria-hidden="true" id="orbit"></div>  <!-- Instagram embed script (loads only when needed) -->  <script async src="https://www.instagram.com/embed.js" id="igScript" crossorigin="anonymous"></script>  <!-- Firebase (Compat CDN for zero-build GitHub Pages). IMPORTANT: Replace config below. -->  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>  <script>
+  // =====================
+  // 1) FIREBASE SETUP
+  // =====================
+  // TODO: Replace these with your Firebase project config (Project settings → General → Your apps → CDN config)
+  const firebaseConfig = {
+    apiKey: "REPLACE_ME",
+    authDomain: "REPLACE_ME.firebaseapp.com",
+    projectId: "REPLACE_ME",
+    storageBucket: "REPLACE_ME.appspot.com",
+    messagingSenderId: "REPLACE_ME",
+    appId: "REPLACE_ME"
+  };
+
+  let db, auth;
+  try{
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    auth = firebase.auth();
+    auth.signInAnonymously().catch(console.warn);
+  } catch(e){
+    console.warn("Firebase not initialized. Fill in firebaseConfig.", e);
+    document.getElementById('errorBox').style.display='block';
+    document.getElementById('errorBox').innerText = '⚠️ Firebase is not configured yet. Votes will not persist for everyone until you add your Firebase config in index.html.';
+  }
+
+  // Collection references
+  const gamesCol = () => db && db.collection('teamVibe_games');
+  const votesCol = (gameId) => db && gamesCol().doc(gameId).collection('votes');
+
+  // =====================
+  // 2) UI HELPERS
+  // =====================
+  const $ = (s, el=document) => el.querySelector(s);
+  const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+
+  const topStats = document.getElementById('topStats');
+  const grid = document.getElementById('gamesGrid');
+  const errorBox = document.getElementById('errorBox');
+  const mediaUrl = document.getElementById('mediaUrl');
+  const loadBtn = document.getElementById('loadBtn');
+  const openBtn = document.getElementById('openBtn');
+  const player = document.getElementById('player');
+
+  function showError(msg){ errorBox.style.display='block'; errorBox.innerText = msg; setTimeout(()=> errorBox.style.display='none', 5000); }
+
+  // Fun confetti
+  (function confetti(){
+    const orbit = document.getElementById('orbit');
+    const colors = ['#7cf7ff','#95ff87','#ffd166','#ff7eb6','#c4b5fd'];
+    for(let i=0;i<40;i++){
+      const d = document.createElement('div');
+      d.className='orb';
+      d.style.left = Math.random()*100+'vw';
+      d.style.top = (-10 - Math.random()*40)+'vh';
+      d.style.background = colors[Math.floor(Math.random()*colors.length)];
+      const dx = (Math.random()*60 - 30) + 'vw';
+      d.style.setProperty('--dx', dx);
+      d.style.animationDuration = (6+Math.random()*10)+'s';
+      orbit.appendChild(d);
+    }
+  })();
+
+  // =====================
+  // 3) VIDEO LOADER
+  // =====================
+  const playOverlay = document.getElementById('playOverlay');
+
+  function parseUrl(u){
+    try{
+      const url = new URL(u);
+      const host = url.hostname.replace('www.','');
+      if(host.includes('youtube.com')){
+        const v = url.searchParams.get('v');
+        if(v) return {type:'youtube', id:v, open:url.toString()};
+      }
+      if(host === 'youtu.be'){
+        const id = url.pathname.slice(1);
+        if(id) return {type:'youtube', id, open:url.toString()};
+      }
+      if(host.includes('instagram.com')){
+        return {type:'instagram', open:url.toString(), embed:url.toString()};
+      }
+      return {type:'unknown', open:url.toString()};
+    }catch(e){ return {type:'invalid'} }
+  }
+
+  function setOpenButton(meta){
+    openBtn.onclick = () => { if(meta && meta.open) window.open(meta.open, '_blank'); };
+    openBtn.textContent = meta.type==='youtube' ? 'Open on YouTube' : meta.type==='instagram' ? 'Open on Instagram' : 'Open Link';
+  }
+
+  function loadIntoPlayer(url){
+    const meta = parseUrl(url);
+    setOpenButton(meta);
+    const overlayHtml = '<div class="overlay" id="playOverlay"><button class="btn" id="playBtn">▶ Play</button><span class="subtle">If playback is blocked, this will open the app/site.</span></div>';
+    player.innerHTML = overlayHtml;
+    const overlay = document.getElementById('playOverlay');
+    const start = () => {
+      if(meta.type==='youtube'){
+        const iframe = document.createElement('iframe');
+        iframe.width = '100%'; iframe.height='100%'; iframe.allow = 'autoplay; encrypted-media';
+        iframe.src = `https://www.youtube.com/embed/${meta.id}?autoplay=1&rel=0`;
+        iframe.frameBorder='0'; iframe.allowFullscreen = true;
+        player.appendChild(iframe);
+        overlay.remove();
+      } else if(meta.type==='instagram'){
+        const block = document.createElement('blockquote');
+        block.className = 'instagram-media'; block.setAttribute('data-instgrm-permalink', meta.embed);
+        block.style = 'margin:0; height:100%; overflow:auto; background:#0a0f24;';
+        player.appendChild(block);
+        if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
+        setTimeout(()=>{ window.open(meta.open, '_blank'); }, 300);
+        overlay.remove();
+      } else if(meta.type==='invalid'){
+        showError('Please paste a valid Instagram or YouTube URL.');
+      } else {
+        window.open(meta.open, '_blank');
+      }
+    };
+    player.querySelector('#playBtn').onclick = start;
+  }
+
+  document.getElementById('loadBtn').addEventListener('click', ()=>{
+    const u = mediaUrl.value.trim(); if(u) loadIntoPlayer(u);
+  });
+  document.getElementById('playBtn').addEventListener('click', ()=>{
+    const u = mediaUrl.value.trim(); if(u) loadIntoPlayer(u);
+  });
+
+  // Allow passing ?video=<url>
+  const qp = new URLSearchParams(location.search);
+  if(qp.get('video')){ mediaUrl.value = qp.get('video'); setTimeout(()=>loadIntoPlayer(mediaUrl.value), 100); }
+
+  // =====================
+  // 4) VOTING + GAMES WITH URL
+  // =====================
+  const newGameName = document.getElementById('newGameName');
+  const newGameUrl  = document.getElementById('newGameUrl');
+  const addGameBtn  = document.getElementById('addGameBtn');
+
+  // Default games (from your message)
+  const DEFAULT_GAMES = [
+    { name:'Hanger transfer', url:'https://www.instagram.com/reel/DOBPgExCLgo/?igsh=MTJpazR0aHBjcjdibw==' },
+    { name:'Do the opposite', url:'https://www.instagram.com/reel/DOycseHE_NS/?igsh=eTI4ZTJ4YnRjYzM4' },
+    { name:'Mission - Bottle Escape', url:'https://www.instagram.com/reel/DMfKLvcvbwF/?igsh=MXI0bDRicTV1ZmdlcA==' },
+    { name:'Drop the pen into bottle using phone camera', url:'https://www.instagram.com/reel/DNP0ZztvnvZ/?igsh=M3h2M3Z5eGE2amlw' }
+  ];
+
+  async function ensureDefaults(){
+    if(!db) return; // offline demo
+    const snap = await gamesCol().limit(1).get();
+    if(snap.empty){
+      const batch = db.batch();
+      DEFAULT_GAMES.forEach(g=>{
+        const ref = gamesCol().doc();
+        batch.set(ref,{name:g.name, url:g.url, count:0, createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      });
+      await batch.commit();
+    }
+  }
+
+  // Render games list and top chips in realtime
+  function renderGames(snap){
+    topStats.innerHTML = '';
+    grid.innerHTML = '';
+    snap.forEach(doc=>{
+      const g = {id:doc.id, ...doc.data()};
+
+      // Top chips
+      const chip = document.createElement('div');
+      chip.className='chip';
+      chip.innerHTML = `<span>🎮 ${g.name}</span> <span class="count" id="count_${g.id}">${g.count||0}</span>`;
+      topStats.appendChild(chip);
+
+      // Game row
+      const row = document.createElement('div');
+      row.className='game';
+      row.innerHTML = `
+        <div class="meta">
+          <div class="name">${g.name}</div>
+          <div class="subtle" style="display:flex; gap:8px; flex-wrap:wrap">
+            ${g.url ? `<button class="btn ghost small" data-act="play" data-url="${g.url}">▶ Play</button>
+            <button class="btn ghost small" data-act="open" data-url="${g.url}">Open Link</button>` : ''}
+          </div>
+        </div>
+        <div class="voteRow">
+          <input type="text" placeholder="Your name" id="name_${g.id}" />
+          <button class="btn" data-act="vote" data-id="${g.id}">+1 Vote</button>
+        </div>`;
+      grid.appendChild(row);
+
+      // Attach handlers
+      row.querySelectorAll('button').forEach(b=>{
+        const act = b.getAttribute('data-act');
+        if(act==='play'){
+          b.addEventListener('click', ()=>{ mediaUrl.value = b.getAttribute('data-url'); loadIntoPlayer(mediaUrl.value); });
+        } else if(act==='open'){
+          b.addEventListener('click', ()=>{ window.open(b.getAttribute('data-url'),'_blank'); });
+        } else if(act==='vote'){
+          b.addEventListener('click', async ()=>{
+            const gameId = b.getAttribute('data-id');
+            const nameInput = document.getElementById('name_'+gameId);
+            const voterName = (nameInput.value || 'Anonymous').trim();
+            if(!db){ showError('Voting works after Firebase config is added.'); return; }
+            try{
+              await votesCol(gameId).add({voterName, ts: firebase.firestore.FieldValue.serverTimestamp()});
+              await gamesCol().doc(gameId).update({count: firebase.firestore.FieldValue.increment(1)});
+              nameInput.value='';
+            }catch(err){ console.error(err); showError('Vote failed. Check console for details.'); }
+          });
+        }
+      });
+    });
+  }
+
+  function subscribe(){
+    if(!db){ // offline preview with your games
+      const demo = DEFAULT_GAMES.map((g,i)=>({id:String(i+1), name:g.name, url:g.url, count: Math.floor(Math.random()*10)}));
+      const fake = { forEach: cb => demo.forEach(d=>cb({id:d.id, data:()=>d})) };
+      renderGames(fake);
+      return;
+    }
+    gamesCol().orderBy('createdAt','asc').onSnapshot(renderGames);
+  }
+
+  addGameBtn.addEventListener('click', async()=>{
+    const name = newGameName.value.trim();
+    const url  = newGameUrl.value.trim();
+    if(!name) return;
+    if(!db){ showError('Add Firebase config to persist games.'); return; }
+    try{
+      await gamesCol().add({name, url: url || null, count:0, createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      newGameName.value=''; newGameUrl.value='';
+    }catch(err){ console.error(err); showError('Could not add game.'); }
+  });
+
+  if(db){ ensureDefaults().then(subscribe); } else { subscribe(); }
+
+  </script></body>
+</html>
