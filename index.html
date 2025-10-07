@@ -230,7 +230,7 @@
       renderList(fake);
       return;
     }
-    reelsCol().orderBy('createdAt','asc').onSnapshot(renderList);
+    reelsCol().onSnapshot(renderList);
   }
 
   // confetti for vibes
