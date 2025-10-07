@@ -5,6 +5,8 @@
   --ink:#e7ecff;
   --muted:#9aa3c7;
 }
+
+/* reset / base */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
@@ -17,6 +19,7 @@ body{
     linear-gradient(180deg,#0b1020,#0b1020 60%, #0f1630);
 }
 
+/* sticky header/title */
 .header{
   position:sticky;
   top:0;
@@ -51,8 +54,10 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* ===== BEGIN: Vote meters smaller ===== */
-.stats{display:grid; gap:6px; margin-bottom:14px}
+/* ------- Vote meters (compact) ------- */
+.stats{display:grid; gap:6px; margin:8px 0 14px}
+#topStats{margin:6px 0 14px}        /* ensure spacing from other blocks */
+
 .hlRow{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center}
 .nameHL{
   position:relative;
@@ -61,10 +66,10 @@ body{
   padding:4px 10px;
   border-radius:999px;
   font-family:Teko, Rubik;
-  font-size:18px;             /* smaller text */
+  font-size:18px;               /* compact text */
   font-weight:700;
   color:#fff;
-  text-shadow:0 1px 2px #000; /* higher contrast on bright bar */
+  text-shadow:0 1px 2px #000;   /* readable on bright bar */
   isolation:isolate;
 }
 .nameHL .fill{
@@ -75,77 +80,82 @@ body{
   filter:saturate(140%) blur(.2px);
 }
 .hlRow .count{font-weight:800}
-/* ===== END: Vote meters smaller ===== */
 
-/* ===== BEGIN: Live votes larger & styled ===== */
+/* ------- Live votes (bigger & animated) ------- */
 .live-inline{
-  margin-top:18px;
-  padding:18px 20px;                            /* bigger padding */
+  margin:18px 0 10px;
+  padding:18px 20px;                           /* bigger padding */
   border:2px solid rgba(255,255,255,.15);
   border-radius:14px;
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
   box-shadow:0 8px 30px rgba(0,0,0,.4);
-  max-height:320px;                             /* taller box */
+  max-height:340px;                            /* taller box */
   overflow:auto;
   animation:fadeIn .4s ease-in;
 }
-
 .live-title{
   font-weight:900;
-  font-size:20px;                               /* larger title */
+  font-size:20px;                              /* larger title */
   color:#ffcc66;
   margin-bottom:8px;
 }
-
 .live-body{
-  font-size:16px;                               /* larger text */
+  font-size:16px;                              /* larger text */
   line-height:1.6;
   animation:fadeIn .5s;
 }
-
 .live-body .item{
-  padding:4px 0;                                /* more breathing room */
+  padding:4px 0;                               /* more breathing room */
   animation:popIn .4s ease-in;
 }
-
 @keyframes fadeIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
 @keyframes popIn{0%{opacity:0; transform:translateX(-10px)} 100%{opacity:1; transform:none}}
-/* ===== END: Live votes larger & styled ===== */
 
-
-
-/* ===== User search ===== */
+/* ------- User search ------- */
 .user-search{margin:10px 0 12px; display:flex; gap:8px}
 .user-search input{
   flex:1; padding:10px 12px; border-radius:10px;
   border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff;
 }
 
-/* grid layout: smaller cards by using 4 columns on wide screens */
+/* ------- Cards grid (smaller cards) ------- */
+#reelsGrid{margin-top:16px}                     /* keep distance from live block */
+
 .grid{display:grid; gap:14px; grid-template-columns:repeat(4, 1fr)}
 @media(max-width:1200px){ .grid{grid-template-columns:repeat(3,1fr)} }
 @media(max-width:1100px){ .grid{grid-template-columns:repeat(2,1fr)} }
 @media(max-width:700px){  .grid{grid-template-columns:1fr} }
 
-
 .card{
   background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
   border:1px solid rgba(255,255,255,.08);
   border-radius:18px;
-  padding:12px;                      /* was 14px */
+  padding:12px;                                 /* tighter than before */
   box-shadow:0 20px 60px rgba(0,0,0,.25);
 }
-
 .card h3{
   margin:2px 0 10px;
-  font-size:18px;                    /* was ~22px; smaller title */
+  font-size:18px;                               /* smaller title */
   font-family:Teko, Rubik;
 }
+.reel{
+  position:relative;
+  width:100%;
+  aspect-ratio:9/16;
+  border-radius:14px;
+  overflow:hidden;
+  background:#0a0f24;
+  border:1px solid rgba(255,255,255,.1)
+}
+.reel iframe, .reel blockquote{
+  position:absolute; inset:0; width:100%; height:100%
+}
 
-.reel{position:relative; width:100%; aspect-ratio:9/16; border-radius:14px; overflow:hidden; background:#0a0f24; border:1px solid rgba(255,255,255,.1)}
-.reel iframe, .reel blockquote{position:absolute; inset:0; width:100%; height:100%}
 .row{display:flex; gap:8px; margin-top:10px; align-items:center}
-.row input{flex:1; min-width:120px; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:var(--ink)}
+.row input{
+  flex:1; min-width:120px; padding:8px 10px; border-radius:10px;
+  border:1px solid rgba(255,255,255,.12); background:#0d1330; color:var(--ink)
+}
 .btn{
   appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer;
   color:#0b1020; background:linear-gradient(135deg,#7cf7ff,#95ff87);
@@ -155,7 +165,7 @@ body{
 .btn.ghost{color:var(--ink); background:transparent; border:1px solid rgba(255,255,255,.12)}
 .btn.warn{background:linear-gradient(135deg,#ff7eb6,#ffd166); color:#0b1020}
 
-/* ===== Admin panel ===== */
+/* ------- Admin panel ------- */
 .admin{margin:12px 0 20px; padding:12px; border-radius:16px; border:1px dashed rgba(255,255,255,.2); background:rgba(255,255,255,.04)}
 .admGrid{display:grid; gap:8px; grid-template-columns:repeat(2,1fr)}
 @media(max-width:900px){.admGrid{grid-template-columns:1fr}}
