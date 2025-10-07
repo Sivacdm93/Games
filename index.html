@@ -104,7 +104,8 @@
   catch(e){ console.warn('Firebase not initialized. Fill config.', e); }
 
   // Collections
-  const reelsCol = () => db && db.collection('teamVibe_games'); // using same collection name
+  // NOTE: Using your exact collection name from screenshot: TeamVibe_games (case-sensitive)
+  const reelsCol = () => db && db.collection('TeamVibe_games'); // using same collection name
   const votesCol = (id) => db && reelsCol().doc(id).collection('votes');
 
   // === 2) Defaults (your 4 reels) ===
@@ -138,7 +139,15 @@
     return {type:'unknown', open:url.toString()}; } catch(e){ return {type:'invalid'}; } }
 
   function reelHtml(doc){
-    const r = {id:doc.id, ...doc.data()};
+    const raw = {id:doc.id, ...doc.data()};
+    // Accept both your field casing (Name, URL, Count, Createdat) and my original (name, url, count, createdAt)
+    const r = {
+      id: raw.id,
+      name: raw.name ?? raw.Name ?? 'Untitled',
+      url: raw.url ?? raw.URL ?? '',
+      count: raw.count ?? raw.Count ?? 0,
+      createdAt: raw.createdAt ?? raw.Createdat ?? null,
+    };
     const meta = parseUrl(r.url||'');
     const embed = (meta.type==='yt')
       ? `<iframe allow="autoplay; encrypted-media" src="https://www.youtube.com/embed/${meta.id}?rel=0" frameborder="0" allowfullscreen></iframe>`
@@ -160,27 +169,43 @@
 
   function renderList(snap){
     grid.innerHTML = '';
-    const items=[]; snap.forEach(d=>items.push({id:d.id, ...d.data()}));
-    // Top stats bars
-    const total = items.reduce((a,b)=>a+(b.count||0),0) || 1;
+    const items=[]; snap.forEach(d=>{
+      const raw = {id:d.id, ...d.data()};
+      items.push({
+        id: raw.id,
+        name: raw.name ?? raw.Name ?? 'Untitled',
+        url: raw.url ?? raw.URL ?? '',
+        count: raw.count ?? raw.Count ?? 0,
+        createdAt: raw.createdAt ?? raw.Createdat ?? null,
+      });
+    });
     const max = Math.max(...items.map(x=>x.count||0), 1);
     topStats.innerHTML = items.map(it=>{
       const pct = Math.round(((it.count||0)/max)*100);
       return `<div class="bar"><div class="name">🎬 ${it.name}</div><div class="track"><div class="fill" style="width:${pct}%"></div></div><div class="count">${it.count||0}</div></div>`;
     }).join('');
 
-    // Cards
-    items.forEach(doc=>{ grid.insertAdjacentHTML('beforeend', reelHtml({id:doc.id, data:()=>doc})); });
-
-    // Process Instagram embeds
+    items.forEach(it=>{ grid.insertAdjacentHTML('beforeend', reelHtml({id:it.id, data:()=>it})); });
     if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
 
-    // Attach handlers
     grid.querySelectorAll('button[data-act="open"]').forEach(b=> b.onclick = ()=> window.open(b.getAttribute('data-url'),'_blank'));
-
     grid.querySelectorAll('button[data-act="vote"]').forEach(b=>{
       b.onclick = async ()=>{
-        if(!db){ return error('Add Firebase config first.'); }
+        if(!db){ return alert('Add Firebase config first.'); }
+        const id = b.getAttribute('data-id');
+        const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
+        if(!name){ return alert('Please enter your name.'); }
+        const device = getDeviceId();
+        const voterKey = name.toLowerCase()+"__"+device;
+        try{
+          const exists = await votesCol(id).where('voterKey','==',voterKey).limit(1).get();
+          if(!exists.empty){ return alert('You already voted for this one from this device/name.'); }
+          await votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()});
+          await reelsCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)});
+        }catch(e){ console.error(e); alert('Vote failed. Check rules.'); }
+      };
+    });
+  }
         const id = b.getAttribute('data-id');
         const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
         if(!name){ return error('Please enter your name.'); }
