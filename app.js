@@ -138,17 +138,24 @@
   // (defined OUTSIDE renderAdmin so handlers can call them)
   // =========================
 
-  // Reset SELECTED (votes + their live log)
-  async function clearVotesForGames(ids) {
-    for (const id of ids) {
-      // delete votes subcollection
-      let snap = await votesCol(id).limit(400).get();
-      while (!snap.empty) {
-        const batch = db.batch();
-        snap.forEach(doc => batch.delete(votesCol(id).doc(doc.id)));
-        await batch.commit();
-        snap = await votesCol(id).limit(400).get();
-      }
+ // Reset Selected (only clears featured flag, no votes)
+document.getElementById('resetSelected').onclick = async ()=>{
+  const chks = [...adminPanel.querySelectorAll('.featChk')];
+  const ids  = chks.filter(c=>c.checked).map(c=>c.getAttribute('data-id'));
+  if(ids.length===0) return alert('Select at least one item.');
+  if(!confirm('Remove these games from selection?')) return;
+
+  try {
+    const batch = db.batch();
+    ids.forEach(id => batch.update(gamesCol().doc(id), {featured:false}));
+    await batch.commit();
+    alert('Selected games removed from user view.');
+  } catch(e) {
+    console.error(e);
+    alert('Reset Selected failed.');
+  }
+};
+
       // reset count
       await gamesCol().doc(id).update({ count: 0 });
 
@@ -338,7 +345,7 @@
       topStats.innerHTML = '';
       grid.innerHTML = '<div class="subtle">No items are selected right now. Check back later.</div>';
     } else {
-      visible.sort((a, b) => (b.count || 0) - (a.count || 0));
+      visible.sort((a,b)=> (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
       renderTopBars(visible);
       grid.innerHTML = visible.map((it, i) => reelCard(it, i)).join('');
       if (window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
