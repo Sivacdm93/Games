@@ -4,87 +4,63 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Team VIBE</title>
+  <meta name="description" content="Vote for the next Team VIBE activity by watching the reels/shorts and casting your vote." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&family=Teko:wght@500;700&display=swap" rel="stylesheet">
-  <style>
-    body{margin:0;font-family:Rubik;background:#0b1020;color:#e7ecff}
-    header{position:sticky;top:0;background:#0b1020cc;backdrop-filter:blur(6px);z-index:10}
-    .wrap{max-width:1200px;margin:auto;padding:16px}
-    .title{font-family:"Fugaz One";font-size:clamp(90px,12vw,150px);background:conic-gradient(from 0deg,#8be9ff,#ffd166,#95ff87,#ff7eb6,#8be9ff);background-size:200% 200%;-webkit-background-clip:text;color:transparent;animation:hue 8s linear infinite}
-    @keyframes hue{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-    .stats{margin-top:8px}
-    .hlRow{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
-    .nameHL{position:relative;display:inline-block;padding:6px 14px;border-radius:12px;font-family:Teko;font-weight:700;font-size:22px;color:#fff;text-shadow:0 1px 2px #000;z-index:1}
-    .nameHL .fill{position:absolute;inset:0;border-radius:12px;z-index:-1;background:linear-gradient(90deg,var(--c1),var(--c2));transform:scaleX(var(--p,0));transform-origin:left;transition:transform .7s ease}
-    .count{font-weight:800}
-    .live-inline{margin-top:14px;padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.05)}
-    .live-title{font-weight:700;font-size:14px;margin-bottom:6px;color:#ffd166}
-    .live-body{font-size:13px;line-height:1.3;max-height:140px;overflow-y:auto}
-    .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:20px}
-    .card{background:#121733;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px}
-    .reel{position:relative;width:100%;aspect-ratio:9/16;background:#000;border-radius:12px;overflow:hidden}
-    .row{margin-top:10px;display:flex;gap:6px}
-    .btn{border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
-    .btn.vote{background:#95ff87;color:#000}
-    .btn.ghost{background:transparent;border:1px solid #95ff87;color:#95ff87}
-    input{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:#0d1330;color:#e7ecff}
-    .admin{margin:12px 0;padding:12px;border:1px dashed rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.05)}
-    .admGrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-    .admRow{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.06)}
-  </style>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Instagram embed (safe, async) -->
+  <script async src="https://www.instagram.com/embed.js" crossorigin="anonymous"></script>
+
+  <!-- Firebase SDK (compat builds to keep bundle small) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="title">Team VIBE</div>
-    <div id="topStats" class="stats"></div>
-    <div id="liveFeedInline" class="live-inline">
-      <div class="live-title">📣 Live votes</div>
-      <div id="feedBodyInline" class="live-body">No votes yet.</div>
+  <!-- Header scrolls with page (not fixed). Only a gentle sticky is used for the title strip -->
+  <header class="header">
+    <div class="wrap brand">
+      <h1 class="title">Team VIBE</h1>
+
+      <!-- Vote meters -->
+      <section id="topStats" class="stats" aria-live="polite"></section>
+
+      <!-- Live votes just below meters -->
+      <section id="liveFeedInline" class="live-inline" aria-live="polite">
+        <div class="live-title">📣 Live votes</div>
+        <div id="feedBodyInline" class="live-body">No votes yet.</div>
+      </section>
     </div>
-  </div>
-</header>
+  </header>
 
-<div class="wrap">
-  <div id="adminPanel" class="admin" style="display:none"></div>
-  <div class="grid" id="reelsGrid"></div>
-</div>
+  <main class="wrap">
+    <!-- Admin panel (shown only with ?admin=1 and correct code) -->
+    <section id="adminPanel" class="admin" style="display:none"></section>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script>
-(function(){
-  const ADMIN_CODE="VIBE-SECRET-1234";
-  const qp=new URLSearchParams(location.search);
-  let isAdmin=qp.get("admin")==="1"&&(localStorage.getItem("tv_admin_ok")==="1"||prompt("Enter admin code")===ADMIN_CODE);
-  if(isAdmin) localStorage.setItem("tv_admin_ok","1");
+    <!-- User search -->
+    <div class="user-search">
+      <input id="userSearch" placeholder="Search games..." />
+    </div>
 
-  const firebaseConfig={apiKey:"AIzaSyAmmehhmU_ZKZ-rdnQ1e6PULO2bd1fYisg",authDomain:"team-vibe-1c3ea.firebaseapp.com",projectId:"team-vibe-1c3ea"};
-  firebase.initializeApp(firebaseConfig);
-  const db=firebase.firestore();firebase.auth().signInAnonymously();
+    <p class="subtle">
+      Vote for your favorite reels/shorts. You can vote for <b>multiple different items</b>, but only once per item from your device + name.
+    </p>
 
-  const gamesCol=()=>db.collection("TeamVibe_games");
-  const votesCol=id=>gamesCol().doc(id).collection("votes");
-  const votersLog=()=>db.collection("voters_log");
+    <!-- Cards/grid -->
+    <section id="reelsGrid" class="grid" aria-live="polite"></section>
 
-  const palette=[["#7cf7ff","#95ff87"],["#ffd166","#7cf7ff"],["#ff7eb6","#ffd166"],["#c4b5fd","#7cf7ff"]];
+    <p class="footer">Built for employee engagement & fun ✌️ — Team VIBE</p>
+  </main>
 
-  function getDeviceId(){const k="device_id";let id=localStorage.getItem(k);if(!id){id=Math.random().toString(36).slice(2);localStorage.setItem(k,id);}return id;}
-
-  function parseUrl(u){try{const url=new URL(u);const h=url.hostname.replace("www.","");if(h.includes("youtube")||h==="youtu.be"){if(h==="youtu.be")return{type:"yt",id:url.pathname.slice(1)};if(url.searchParams.get("v"))return{type:"yt",id:url.searchParams.get("v")};const m=url.pathname.match(/\/shorts\/([\w-]+)/);if(m)return{type:"yt",id:m[1]};}if(h.includes("instagram.com"))return{type:"ig",embed:u};return{type:"unk"}}catch(e){return{type:"unk"}}}
-
-  function reelCard(it){const m=parseUrl(it.url||"");const embed=m.type==="yt"?`<iframe src="https://www.youtube.com/embed/${m.id}" allowfullscreen></iframe>`:m.type==="ig"?`<blockquote class="instagram-media" data-instgrm-permalink="${it.url}"></blockquote>`:`<div>Unsupported</div>`;return `<div class="card"><h3>${it.name}</h3><div class="reel">${embed}</div><div class="row"><input id="n_${it.id}" placeholder="Your name"><button class="btn vote" data-id="${it.id}" data-name="${encodeURIComponent(it.name)}">+1 Vote</button></div></div>`}
-
-  function renderBars(items){const max=Math.max(...items.map(x=>x.count||0),1);document.getElementById("topStats").innerHTML=items.map((it,i)=>{const p=(it.count||0)/max;const[c1,c2]=palette[i%palette.length];return `<div class="hlRow"><span class="nameHL" style="--p:${p};--c1:${c1};--c2:${c2}"><span class="fill"></span>${it.name}</span><span class="count">${it.count||0}</span></div>`}).join("")}
-
-  function render(items){const vis=isAdmin?items:items.filter(x=>x.featured);vis.sort((a,b)=>(b.count||0)-(a.count||0));renderBars(vis);const g=document.getElementById("reelsGrid");g.innerHTML=vis.map(it=>reelCard(it)).join("");g.querySelectorAll(".btn.vote").forEach(b=>b.onclick=()=>{const id=b.dataset.id;const n=document.getElementById("n_"+id).value||"Anon";const device=getDeviceId();votesCol(id).where("voterKey","==",device).get().then(q=>{if(!q.empty)return alert("Already voted");votesCol(id).add({voterName:n,voterKey:device,ts:firebase.firestore.FieldValue.serverTimestamp()});gamesCol().doc(id).update({count:firebase.firestore.FieldValue.increment(1)});votersLog().add({voterName:n,gameId:id,gameName:decodeURIComponent(b.dataset.name),ts:firebase.firestore.FieldValue.serverTimestamp()});});});renderAdmin(items)}
-
-  function renderAdmin(items){if(!isAdmin)return;const p=document.getElementById("adminPanel");p.style.display="block";p.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:8px"><button id="saveBtn" class="btn">Save Selected</button><button id="resetFeat" class="btn warn">Reset votes (featured)</button><button id="resetSel" class="btn warn">Reset votes (selected)</button></div><div class="admGrid">${items.map(it=>`<div class="admRow"><div><input type="checkbox" class="chk" data-id="${it.id}" ${it.featured?"checked":""}> ${it.name}</div><span>${it.count||0}</span></div>`).join("")}</div>`;p.querySelector("#saveBtn").onclick=async()=>{const sel=[...p.querySelectorAll(".chk")].filter(c=>c.checked).map(c=>c.dataset.id);const batch=db.batch();items.forEach(it=>batch.update(gamesCol().doc(it.id),{featured:sel.includes(it.id)}));await batch.commit();alert("Selected saved")};async function reset(ids){for(const id of ids){let s=await votesCol(id).get();s.forEach(d=>votesCol(id).doc(d.id).delete());await gamesCol().doc(id).update({count:0})}let l=await votersLog().get();l.forEach(d=>votersLog().doc(d.id).delete());}p.querySelector("#resetFeat").onclick=()=>reset(items.filter(x=>x.featured).map(x=>x.id));p.querySelector("#resetSel").onclick=()=>reset([...p.querySelectorAll(".chk")].filter(c=>c.checked).map(c=>c.dataset.id));}
-
-  function live(){votersLog().orderBy("ts","desc").limit(10).onSnapshot(s=>{const arr=[];s.forEach(d=>arr.push(d.data()));document.getElementById("feedBodyInline").innerHTML=arr.length?arr.map(v=>`• <b>${v.voterName}</b> voted <i>${v.gameName}</i>`).join("<br>"):"No votes yet."})}
-
-  gamesCol().onSnapshot(s=>{const items=[];s.forEach(d=>items.push({id:d.id,...d.data()}));render(items)});live();
-})();
-</script>
+  <!-- Config (your Firebase credentials + admin code) -->
+  <script src="config.js"></script>
+  <!-- App logic -->
+  <script src="app.js"></script>
 </body>
 </html>
