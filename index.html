@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Team VIBE</title>
-  <meta name="description" content="Vote for the next Team VIBE activity by watching the reels/shorts and casting your vote." />
+  <meta name="description" content="Vote for the next Team VIBE activity by watching reels/shorts and casting your vote." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
@@ -25,18 +25,20 @@
     @keyframes hue{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
     @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-    /* Highlight meters in name rows (vote progress) */
+    /* Vote meters (highlight liquid fill behind names) */
     .stats{display:grid; gap:10px; grid-template-columns:1fr; margin-top:6px}
     .hlRow{display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px}
     .nameHL{
-      position:relative; display:inline-block; padding:2px 12px;
+      position:relative; display:inline-block; padding:6px 14px;
       border-radius:999px; font-family:Teko, Rubik; font-size:22px; letter-spacing:.2px;
+      overflow:hidden; isolation:isolate;
     }
-    .nameHL::before{
-      content:""; position:absolute; inset:0; border-radius:inherit;
-      background: linear-gradient(90deg, var(--c1), transparent 70%);
-      opacity:.35; transform-origin:left; transform: scaleX(var(--p,0));
-      transition: transform .7s cubic-bezier(.22,.61,.36,1);
+    .nameHL .fill{
+      position:absolute; inset:0; border-radius:inherit; z-index:-1;
+      background:linear-gradient(90deg, var(--c1), var(--c2));
+      transform:scaleX(var(--p,0)); transform-origin:left;
+      transition:transform .7s cubic-bezier(.22,.61,.36,1);
+      filter: saturate(140%) blur(.2px);
     }
     .hlRow .count{font-weight:800}
 
@@ -59,17 +61,17 @@
     .subtle{color:var(--muted); font-size:13px}
     .footer{margin:20px 0 60px; text-align:center; color:var(--muted); font-size:12px}
 
-    /* Inline live feed in header */
+    /* Live feed box under meters (in header area) */
     .live-inline{
-      width:100%; margin-top:6px; border:1px solid rgba(255,255,255,.08);
-      border-radius:12px; padding:8px 10px;
+      width:100%; margin-top:12px; border:1px solid rgba(255,255,255,.08);
+      border-radius:12px; padding:10px 12px;
       background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
     }
-    .live-title{font-weight:800; font-size:13px; color:#9aa3c7; margin-bottom:4px}
-    .live-body{font-size:13px; line-height:1.35}
+    .live-title{font-weight:800; font-size:14px; color:#ffd166; margin-bottom:4px}
+    .live-body{font-size:13px; line-height:1.35; max-height:140px; overflow:auto}
     .live-body .item{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-    /* User search */
+    /* User search above grid */
     .user-search{margin:8px 0 12px; display:flex; gap:8px}
     .user-search input{
       flex:1; padding:10px 12px; border-radius:10px;
@@ -81,11 +83,6 @@
     .admGrid{display:grid; gap:8px; grid-template-columns:repeat(2,1fr)}
     @media(max-width:900px){.admGrid{grid-template-columns:1fr}}
     .admRow{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.04)}
-
-    /* confetti */
-    .orbit{position:fixed; pointer-events:none; inset:0; overflow:hidden}
-    .orb{position:absolute; width:10px; height:10px; border-radius:2px; opacity:.7; animation: drift linear infinite}
-    @keyframes drift{to{transform:translate3d(var(--dx), 100vh, 0) rotate(720deg)}}
   </style>
 </head>
 <body>
@@ -94,7 +91,7 @@
       <div class="title">Team VIBE</div>
       <div class="stats" id="topStats"></div>
 
-      <!-- Live votes inline at top -->
+      <!-- Live votes inline at the top (where you marked) -->
       <div id="liveFeedInline" class="live-inline">
         <div class="live-title">📣 Live votes</div>
         <div id="feedBodyInline" class="live-body">No votes yet.</div>
@@ -115,8 +112,6 @@
 
     <p class="footer">Built for employee engagement & fun ✌️ – Team VIBE</p>
   </div>
-
-  <div class="orbit" aria-hidden="true" id="orbit"></div>
 
   <script async src="https://www.instagram.com/embed.js" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -240,14 +235,16 @@
         </article>`;
     }
 
-    // Name-highlight style progress
+    // Name-highlight style progress (liquid fill)
     function renderTopBars(items){
       const max = Math.max(...items.map(x=>x.count||0), 1);
       topStats.innerHTML = items.map((it,i)=>{
         const pct = (it.count||0) / max;
-        const c1 = palette[i%palette.length][0];
+        const [c1,c2] = palette[i%palette.length];
         return `<div class="hlRow">
-          <span class="nameHL" style="--p:${pct}; --c1:${c1}">${it.name}</span>
+          <span class="nameHL" style="--p:${pct}; --c1:${c1}; --c2:${c2}">
+            <span class="fill"></span>${it.name}
+          </span>
           <span class="count">${it.count||0}</span>
         </div>`;
       }).join('');
@@ -269,6 +266,8 @@
             <button class="btn ghost" id="importGames">Import games (add missing)</button>
           </div>
         </div>
+        <!-- Admin search -->
+        <input id="adminSearch" placeholder="Search admin list..." style="margin-top:8px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0d1330;color:#e7ecff;width:100%">
         <div class="admGrid" style="margin-top:10px">${items.map(it=>`
           <div class="admRow">
             <div style="display:flex; align-items:center; gap:10px">
@@ -280,21 +279,15 @@
         <div id="votersBox" class="subtle" style="margin-top:10px"></div>
       `;
 
-      // Admin search box
-      if(!document.getElementById('adminSearch')){
-        const s = document.createElement('input');
-        s.id = 'adminSearch';
-        s.placeholder = 'Search admin list...';
-        s.style.cssText = 'margin-top:8px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0d1330;color:#e7ecff;width:100%';
-        adminPanel.prepend(s);
-        s.oninput = () => {
-          const val = s.value.toLowerCase();
-          adminPanel.querySelectorAll('.admRow').forEach(row=>{
-            const name = row.querySelector('span').textContent.toLowerCase();
-            row.style.display = name.includes(val) ? '' : 'none';
-          });
-        };
-      }
+      // Admin filter
+      const s = document.getElementById('adminSearch');
+      s.oninput = () => {
+        const val = s.value.toLowerCase();
+        adminPanel.querySelectorAll('.admRow').forEach(row=>{
+          const name = row.querySelector('span').textContent.toLowerCase();
+          row.style.display = name.includes(val) ? '' : 'none';
+        });
+      };
 
       // Add game
       document.getElementById('addGameBtn').onclick = async ()=>{
@@ -323,10 +316,11 @@
         }catch(e){ console.error(e); alert('Saving failed.'); }
       };
 
-      // Reset votes (featured)
+      // Reset votes (featured) + clear voters_log
       document.getElementById('resetVotes').onclick = async ()=>{
-        if(!confirm('Set counts to 0 and delete vote logs for ALL featured items?')) return;
+        if(!confirm('Set counts to 0 and delete vote logs for ALL featured items? Live comments will be cleared.')) return;
         try{
+          // 1) Clear votes subcollections + reset counts for FEATURED items
           for(const it of items.filter(x=>x.featured)){
             let snap = await votesCol(it.id).limit(400).get();
             while(!snap.empty){
@@ -337,8 +331,16 @@
             }
             await gamesCol().doc(it.id).update({count:0});
           }
-          alert('Votes reset complete.');
-        }catch(e){ console.error(e); alert('Reset failed. Ensure rules allow delete on /votes/* and update on games.'); }
+          // 2) Clear voters_log collection in chunks
+          let lsnap = await votersLog().limit(400).get();
+          while(!lsnap.empty){
+            const lbatch = db.batch();
+            lsnap.forEach(doc=> lbatch.delete(votersLog().doc(doc.id)));
+            await lbatch.commit();
+            lsnap = await votersLog().limit(400).get();
+          }
+          alert('Votes & live comments reset complete.');
+        }catch(e){ console.error(e); alert('Reset failed. Ensure rules allow delete for /votes/* and /voters_log.'); }
       };
 
       // View recent voters (for featured)
@@ -365,8 +367,31 @@
             if(q.empty){ await gamesCol().add({name:g.name, url:g.url, count:0, featured:false, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); }
           }
           alert('Import complete. Refresh to see new items.');
-        }catch(e){ console.error(e); alert('Import failed. Ensure rules allow create temporarily.'); }
+        }catch(e){ console.error(e); alert('Import failed. Ensure rules allow create.'); }
       };
+    }
+
+    function reelEvents(items){
+      if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
+      grid.querySelectorAll('button[data-act="open"]').forEach(b=> b.onclick = ()=> window.open(b.getAttribute('data-url'),'_blank'));
+      grid.querySelectorAll('button[data-act="vote"]').forEach(b=>{
+        b.onclick = function(){
+          if(!db) return alert('Add Firebase config first.');
+          const id = b.getAttribute('data-id');
+          const gname = decodeURIComponent(b.getAttribute('data-name'));
+          const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
+          if(!name) return alert('Please enter your name.');
+          const device = getDeviceId();
+          const voterKey = device; // one vote per reel per device
+          votesCol(id).where('voterKey','==',voterKey).limit(1).get().then(q=>{
+            if(!q.empty) return alert('You already voted for this one from this device. You can vote others.');
+            return votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()})
+              .then(()=> votersLog().add({voterName:name, gameId:id, gameName:gname, device, ts: firebase.firestore.FieldValue.serverTimestamp()}))
+              .then(()=> gamesCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)}))
+              .catch(e=>{ console.error(e); alert('Vote failed.'); });
+          });
+        }
+      });
     }
 
     function renderList(snap){
@@ -388,57 +413,14 @@
         grid.innerHTML = '<div class="subtle">No items are selected right now. Check back later.</div>';
       } else {
         // Sort by votes (desc)
-        visible.sort((a,b)=> (b.count||0) - (a.count||0));
+        visible.sort((a,b)=> (b.count||0) - (a.count||0)).reverse();
         renderTopBars(visible);
         grid.innerHTML='';
         visible.forEach((it,i)=> grid.insertAdjacentHTML('beforeend', reelCard(it,i)));
-        if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
-
-        grid.querySelectorAll('button[data-act="open"]').forEach(b=> b.onclick = ()=> window.open(b.getAttribute('data-url'),'_blank'));
-        grid.querySelectorAll('button[data-act="vote"]').forEach(b=>{
-          b.onclick = function(){
-            if(!db) return alert('Add Firebase config first.');
-            const id = b.getAttribute('data-id');
-            const gname = decodeURIComponent(b.getAttribute('data-name'));
-            const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
-            if(!name) return alert('Please enter your name.');
-            const device = getDeviceId();
-            const voterKey = device; // one vote per reel per device
-            votesCol(id).where('voterKey','==',voterKey).limit(1).get().then(q=>{
-              if(!q.empty) return alert('You already voted for this one from this device. You can vote others.');
-              return votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()})
-                .then(()=> votersLog().add({voterName:name, gameId:id, gameName:gname, device, ts: firebase.firestore.FieldValue.serverTimestamp()}))
-                .then(()=> gamesCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)}))
-                .catch(e=>{ console.error(e); alert('Vote failed.'); });
-            });
-          }
-        });
+        reelEvents(visible);
       }
 
       renderAdmin(items);
-    }
-
-    function subscribe(){
-      if(!db){
-        grid.innerHTML = '<div class="subtle">Connect Firebase to load items.</div>';
-        return;
-      }
-      // list + counts
-      gamesCol().onSnapshot(renderList, err=>console.error('Snapshot error', err));
-      // live feed
-      votesLive();
-
-      // user search filter
-      const userSearchInput = document.getElementById('userSearch');
-      if (userSearchInput) {
-        userSearchInput.addEventListener('input', () => {
-          const q = userSearchInput.value.trim().toLowerCase();
-          document.querySelectorAll('#reelsGrid .card').forEach(card=>{
-            const h3 = card.querySelector('h3')?.textContent?.toLowerCase() || '';
-            card.style.display = h3.includes(q) ? '' : 'none';
-          });
-        });
-      }
     }
 
     function votesLive(){
@@ -454,8 +436,26 @@
       }catch(e){ console.warn('Live feed not available', e); }
     }
 
-    // confetti
-    (function(){ const orbit=document.getElementById('orbit'); const colors=['#7cf7ff','#95ff87','#ffd166','#ff7eb6','#c4b5fd']; for(let i=0;i<40;i++){ const d=document.createElement('div'); d.className='orb'; d.style.left=Math.random()*100+'vw'; d.style.top=(-10-Math.random()*40)+'vh'; d.style.background=colors[Math.floor(Math.random()*colors.length)]; const dx=(Math.random()*60-30)+'vw'; d.style.setProperty('--dx',dx); d.style.animationDuration=(6+Math.random()*10)+'s'; orbit.appendChild(d);} })();
+    function subscribe(){
+      if(!db){
+        grid.innerHTML = '<div class="subtle">Connect Firebase to load items.</div>';
+        return;
+      }
+      gamesCol().onSnapshot(renderList, err=>console.error('Snapshot error', err));
+      votesLive();
+
+      // user search filter
+      const userSearchInput = document.getElementById('userSearch');
+      if (userSearchInput) {
+        userSearchInput.addEventListener('input', () => {
+          const q = userSearchInput.value.trim().toLowerCase();
+          document.querySelectorAll('#reelsGrid .card').forEach(card=>{
+            const h3 = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+            card.style.display = h3.includes(q) ? '' : 'none';
+          });
+        });
+      }
+    }
 
     subscribe();
   })();
