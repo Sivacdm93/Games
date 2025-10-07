@@ -215,22 +215,39 @@
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
           <div><b>Admin</b> – Toggle <b>Featured</b> on any number of games. Users only see featured ones.</div>
           <div style="display:flex; gap:8px; flex-wrap:wrap">
-            <button class="btn" id="saveFeatured">Save Featured</button>
-            <button class="btn warn" id="resetVotes">Reset votes (featured)</button>
-            <button class="btn ghost" id="viewVoters">View recent voters</button>
-            <button class="btn ghost" id="importGames">Import games (add missing)</button>
+            <input id=\"newName\" placeholder=\"Game name\" style=\"padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff; min-width:220px\" />
+            <input id=\"newUrl\" placeholder=\"Game URL (IG/YouTube)\" style=\"padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff; min-width:320px\" />
+            <button class=\"btn\" id=\"addGameBtn\">Add game</button>
+            <button class=\"btn\" id=\"saveFeatured\">Save Featured</button>
+            <button class=\"btn warn\" id=\"resetVotes\">Reset votes (featured)</button>
+            <button class=\"btn ghost\" id=\"viewVoters\">View recent voters</button>
+            <button class=\"btn ghost\" id=\"importGames\">Import games (add missing)</button>
           </div>
         </div>
-        <div class="admGrid" style="margin-top:10px">${items.map(it=>`
-          <div class="admRow">
-            <div style="display:flex; align-items:center; gap:10px">
-              <input type="checkbox" class="featChk" data-id="${it.id}" ${it.featured?'checked':''} />
+        <div class=\"admGrid\" style=\"margin-top:10px\">${items.map(it=>`
+          <div class=\"admRow\">
+            <div style=\"display:flex; align-items:center; gap:10px\">
+              <input type=\"checkbox\" class=\"featChk\" data-id=\"${it.id}\" ${it.featured?'checked':''} />
               <span>${it.name}</span>
             </div>
-            <span class="subtle">${it.count||0} votes</span>
+            <span class=\"subtle\">${it.count||0} votes</span>
           </div>`).join('')}</div>
-        <div id="votersBox" class="subtle" style="margin-top:10px"></div>
+        <div id=\"votersBox\" class=\"subtle\" style=\"margin-top:10px\"></div>
       `;
+      // Add single game (admin quick add)
+      document.getElementById('addGameBtn').onclick = async ()=>{
+        const name = (document.getElementById('newName').value||'').trim();
+        const url  = (document.getElementById('newUrl').value||'').trim();
+        if(!name || !url) return alert('Enter both name and URL.');
+        try{
+          const q = await gamesCol().where('name','==', name).limit(1).get();
+          if(!q.empty){ alert('A game with this name already exists.'); return; }
+          await gamesCol().add({name, url, count:0, featured:false, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+          document.getElementById('newName').value='';
+          document.getElementById('newUrl').value='';
+          alert('Game added.');
+        }catch(e){ console.error(e); alert('Add failed. Check Firestore rules allow create.'); }
+      };
       // Save featured (any number allowed)
       document.getElementById('saveFeatured').onclick = async ()=>{
         const chks = [...adminPanel.querySelectorAll('.featChk')];
@@ -247,7 +264,6 @@
         if(!confirm('Set counts to 0 and delete vote logs for ALL featured items?')) return;
         try{
           for(const it of items.filter(x=>x.featured)){
-            // delete votes in chunks
             let snap = await votesCol(it.id).limit(400).get();
             while(!snap.empty){
               const batch = db.batch();
@@ -270,7 +286,7 @@
             snap.forEach(d=> list.push({game: items.find(x=>x.id===id)?.name || id, ...d.data()}));
           }
           list.sort((a,b)=> (b.ts?.seconds||0)-(a.ts?.seconds||0));
-          const html = '<div><b>Recent voters</b></div>' + list.map(v=>`<div>• ${v.voterName||'Anonymous'} <span class="subtle">(${v.game})</span></div>`).join('');
+          const html = '<div><b>Recent voters</b></div>' + list.map(v=>`<div>• ${v.voterName||'Anonymous'} <span class=\"subtle\">(${v.game})</span></div>`).join('');
           document.getElementById('votersBox').innerHTML = html || 'No votes yet.';
         }catch(e){ console.error(e); alert('Could not load voters'); }
       };
