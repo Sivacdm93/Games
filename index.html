@@ -9,42 +9,27 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; --accent:#7cf7ff; --good:#37d67a; --warn:#ffd166; --bad:#ff5c8a;
-    }
+    :root{ --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; font-family:Rubik, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--ink); background:radial-gradient(1200px 800px at 10% -10%, #1a2050, transparent 50%),
-                        radial-gradient(1200px 800px at 110% 10%, #35206a, transparent 50%),
-                        linear-gradient(180deg,#0b1020,#0b1020 60%, #0f1630);
-    }
-    header{position:sticky; top:0; z-index:10; backdrop-filter:saturate(1.2) blur(6px); background:linear-gradient(180deg, rgba(15,22,48,.85), rgba(15,22,48,.35)); border-bottom:1px solid rgba(255,255,255,.08)}
+    body{ margin:0; font-family:Rubik,system-ui,Segoe UI,Roboto,Helvetica,Arial; color:var(--ink);
+      background:radial-gradient(1200px 800px at 10% -10%, #1a2050, transparent 50%),
+                 radial-gradient(1200px 800px at 110% 10%, #35206a, transparent 50%),
+                 linear-gradient(180deg,#0b1020,#0b1020 60%, #0f1630); }
+    header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg, rgba(15,22,48,.85), rgba(15,22,48,.35)); border-bottom:1px solid rgba(255,255,255,.08); -webkit-backdrop-filter:saturate(1.2) blur(6px); backdrop-filter:saturate(1.2) blur(6px)}
     .wrap{max-width:1200px; margin:0 auto; padding:16px}
-
-    /* Title */
     .brand{display:flex; align-items:center; gap:16px; justify-content:space-between; flex-wrap:wrap}
     .title{font-family:"Fugaz One", cursive; line-height:.9; margin:6px 0; font-size: clamp(100px, 14vw, 160px); letter-spacing:2px; text-transform:uppercase; background: conic-gradient(from 0deg, #8be9ff, #ffd166, #95ff87, #ff7eb6, #8be9ff); background-size: 200% 200%; -webkit-background-clip: text; background-clip:text; color: transparent; filter: drop-shadow(0 8px 30px rgba(124,247,255,.25)); animation: hue 8s linear infinite, floaty 5s ease-in-out infinite}
     @keyframes hue{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
     @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-    .sparkles{position:relative}
-    .sparkles::after{content:"✨"; font-size: clamp(28px, 5vw, 48px); position:absolute; right:-8px; top:-8px; filter:drop-shadow(0 2px 8px rgba(255,255,255,.4)); animation: bob 3.5s ease-in-out infinite 1s}
-    @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(6deg)}}
-
-    /* Top stats with bars */
-    .stats{display:grid; gap:10px; grid-template-columns:1fr}
+    .stats{display:grid; gap:10px; grid-template-columns:1fr; margin-top:6px}
     .bar{display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center}
-    .bar .name{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:40vw}
     .bar .track{height:12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:999px; overflow:hidden}
     .bar .fill{height:100%; background:linear-gradient(90deg,#7cf7ff,#95ff87); width:0%}
     .bar .count{font-weight:800}
-
-    /* Grid of reels */
     .grid{display:grid; gap:16px; grid-template-columns:repeat(3, 1fr)}
     @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:700px){.grid{grid-template-columns:1fr}}
-
     .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:14px; box-shadow:0 20px 60px rgba(0,0,0,.25)}
     .card h3{margin:2px 0 10px; font-size:18px}
     .reel{position:relative; width:100%; aspect-ratio:9/16; border-radius:14px; overflow:hidden; background:#0a0f24; border:1px solid rgba(255,255,255,.1)}
@@ -53,12 +38,8 @@
     .row input{flex:1; min-width:120px; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:var(--ink)}
     .btn{appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; color:#0b1020; background:linear-gradient(135deg,#7cf7ff,#95ff87); box-shadow:0 10px 30px rgba(124,247,255,.25); transition:.2s transform}
     .btn:hover{transform:translateY(-1px)}
-    .btn.ghost{color:var(--ink); background:transparent; border:1px solid rgba(255,255,255,.12)}
     .subtle{color:var(--muted); font-size:13px}
     .footer{margin:20px 0 60px; text-align:center; color:var(--muted); font-size:12px}
-    .warn{background:rgba(255,92,138,.08); border:1px solid rgba(255,92,138,.25); color:#ffc7d6; padding:10px 12px; border-radius:12px}
-
-    /* confetti */
     .orbit{position:fixed; pointer-events:none; inset:0; overflow:hidden}
     .orb{position:absolute; width:10px; height:10px; border-radius:2px; opacity:.7; animation: drift linear infinite}
     @keyframes drift{to{transform:translate3d(var(--dx), 100vh, 0) rotate(720deg)}}
@@ -67,178 +48,149 @@
 <body>
   <header>
     <div class="wrap brand">
-      <div class="sparkles title">Team VIBE</div>
+      <div class="title">Team VIBE</div>
       <div class="stats" id="topStats"></div>
     </div>
   </header>
 
   <div class="wrap" style="margin-top:10px">
-    <p class="subtle">Vote for your favorite reels/shorts. You can vote for **multiple different items**, but only once per item from your device + name.</p>
-
+    <p class="subtle">Vote for your favorite reels/shorts. You can vote for <b>multiple different items</b>, but only once per item from your device + name.</p>
     <div class="grid" id="reelsGrid"></div>
-
     <p class="footer">Built for employee engagement & fun ✌️ – Team VIBE</p>
   </div>
 
   <div class="orbit" aria-hidden="true" id="orbit"></div>
 
-  <!-- Instagram embed script -->
   <script async src="https://www.instagram.com/embed.js" crossorigin="anonymous"></script>
-  <!-- Firebase (Compat CDN) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
   <script>
   (function(){ 'use strict';
-  // === 1) Firebase Setup (replace with your values) ===
-  const firebaseConfig = { 
-    apiKey: "AIzaSyAmmehhmU_ZKZ-rdnQ1e6PULO2bd1fYisg",
-    authDomain: "team-vibe-1c3ea.firebaseapp.com",
-    projectId: "team-vibe-1c3ea",
-    storageBucket: "team-vibe-1c3ea.firebasestorage.app",
-    messagingSenderId: "970729517323",
-    appId: "1:970729517323:web:2f0034d39ca6c22702f20e"
-  };
-  let db, auth;
-  try{ firebase.initializeApp(firebaseConfig); db=firebase.firestore(); auth=firebase.auth(); auth.signInAnonymously().catch(console.warn); }
-  catch(e){ console.warn('Firebase not initialized. Fill config.', e); }
-
-  // Collections
-  // NOTE: Using your exact collection name from screenshot: TeamVibe_games (case-sensitive)
-  const reelsCol = () => db && db.collection('TeamVibe_games'); // using same collection name
-  const votesCol = (id) => db && reelsCol().doc(id).collection('votes');
-
-  // === 2) Defaults (your 4 reels) ===
-  const DEFAULTS = [
-    { name:'Hanger transfer', url:'https://www.instagram.com/reel/DOBPgExCLgo/?igsh=MTJpazR0aHBjcjdibw==' },
-    { name:'Do the opposite', url:'https://www.instagram.com/reel/DOycseHE_NS/?igsh=eTI4ZTJ4YnRjYzM4' },
-    { name:'Mission - Bottle Escape', url:'https://www.instagram.com/reel/DMfKLvcvbwF/?igsh=MXI0bDRicTV1ZmdlcA==' },
-    { name:'Drop the pen into bottle using phone camera', url:'https://www.instagram.com/reel/DNP0ZztvnvZ/?igsh=M3h2M3Z5eGE2amlw' }
-  ];
-
-  async function seedIfMissing(){
-    if(!db) return;
-    for(const r of DEFAULTS){
-      const q = await reelsCol().where('name','==', r.name).limit(1).get();
-      if(q.empty){ await reelsCol().add({ name:r.name, url:r.url, count:0, createdAt:firebase.firestore.FieldValue.serverTimestamp() }); }
-    }
-  }
-
-  // === 3) UI helpers ===
-  const grid = document.getElementById('reelsGrid');
-  const topStats = document.getElementById('topStats');
-  const error = (msg)=>{ alert(msg); };
-
-  // stable device id for duplicate prevention
-  const DID_KEY = 'teamvibe_device_id';
-  function getDeviceId(){ let id = localStorage.getItem(DID_KEY); if(!id){ id = Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem(DID_KEY,id);} return id; }
-
-  function parseUrl(u){ try{ const url=new URL(u); const host=url.hostname.replace('www.',''); if(host.includes('youtube.com')){ const v=url.searchParams.get('v'); if(v) return {type:'yt', id:v, open:url.toString()}; }
-    if(host==='youtu.be'){ const id=url.pathname.slice(1); if(id) return {type:'yt', id, open:url.toString()}; }
-    if(host.includes('instagram.com')){ return {type:'ig', open:url.toString(), embed:url.toString()}; }
-    return {type:'unknown', open:url.toString()}; } catch(e){ return {type:'invalid'}; } }
-
-  function reelHtml(doc){
-    const raw = {id:doc.id, ...doc.data()};
-    // Accept both your field casing (Name, URL, Count, Createdat) and my original (name, url, count, createdAt)
-    const r = {
-      id: raw.id,
-      name: raw.name ?? raw.Name ?? 'Untitled',
-      url: raw.url ?? raw.URL ?? '',
-      count: raw.count ?? raw.Count ?? 0,
-      createdAt: raw.createdAt ?? raw.Createdat ?? null,
+    // ===== Firebase init =====
+    const firebaseConfig = { 
+      apiKey: "AIzaSyAmmehhmU_ZKZ-rdnQ1e6PULO2bd1fYisg",
+      authDomain: "team-vibe-1c3ea.firebaseapp.com",
+      projectId: "team-vibe-1c3ea",
+      storageBucket: "team-vibe-1c3ea.firebasestorage.app",
+      messagingSenderId: "970729517323",
+      appId: "1:970729517323:web:2f0034d39ca6c22702f20e"
     };
-    const meta = parseUrl(r.url||'');
-    const embed = (meta.type==='yt')
-      ? `<iframe allow="autoplay; encrypted-media" src="https://www.youtube.com/embed/${meta.id}?rel=0" frameborder="0" allowfullscreen></iframe>`
-      : (meta.type==='ig')
-        ? `<blockquote class="instagram-media" data-instgrm-permalink="${r.url}" style="margin:0; height:100%; overflow:auto; background:#0a0f24;"></blockquote>`
-        : `<div class="subtle" style="padding:8px">Unsupported link</div>`;
+    let db, auth;
+    try{ firebase.initializeApp(firebaseConfig); db=firebase.firestore(); auth=firebase.auth(); auth.signInAnonymously().catch(console.warn);}catch(e){console.warn('Firebase not initialized', e)}
 
-    return `
-      <article class="card" id="card_${r.id}">
-        <h3>${r.name}</h3>
-        <div class="reel" data-type="${meta.type}" data-open="${meta.open||''}">${embed}</div>
-        <div class="row">
-          <input placeholder="Your name" id="name_${r.id}" />
-          <button class="btn" data-act="vote" data-id="${r.id}">+1 Vote</button>
-          <button class="btn ghost" data-act="open" data-url="${meta.open||''}">Open</button>
-        </div>
-      </article>`;
-  }
+    // ===== Firestore refs =====
+    const reelsCol = () => db && db.collection('TeamVibe_games'); // case-sensitive
+    const votesCol = (id) => db && reelsCol().doc(id).collection('votes');
 
-  function renderList(snap){
-    grid.innerHTML = '';
-    const items=[]; snap.forEach(d=>{
-      const raw = {id:d.id, ...d.data()};
-      items.push({
-        id: raw.id,
-        name: raw.name ?? raw.Name ?? 'Untitled',
-        url: raw.url ?? raw.URL ?? '',
-        count: raw.count ?? raw.Count ?? 0,
-        createdAt: raw.createdAt ?? raw.Createdat ?? null,
-      });
-    });
-    const max = Math.max(...items.map(x=>x.count||0), 1);
-    topStats.innerHTML = items.map(it=>{
-      const pct = Math.round(((it.count||0)/max)*100);
-      return `<div class="bar"><div class="name">🎬 ${it.name}</div><div class="track"><div class="fill" style="width:${pct}%"></div></div><div class="count">${it.count||0}</div></div>`;
-    }).join('');
+    // ===== Defaults (optional) =====
+    const DEFAULTS = [
+      { name:'Hanger transfer', url:'https://www.instagram.com/reel/DOBPgExCLgo/?igsh=MTJpazR0aHBjcjdibw==' },
+      { name:'Do the opposite', url:'https://www.instagram.com/reel/DOycseHE_NS/?igsh=eTI4ZTJ4YnRjYzM4' },
+      { name:'Mission - Bottle Escape', url:'https://www.instagram.com/reel/DMfKLvcvbwF/?igsh=MXI0bDRicTV1ZmdlcA==' },
+      { name:'Drop the pen into bottle using phone camera', url:'https://www.instagram.com/reel/DNP0ZztvnvZ/?igsh=M3h2M3Z5eGE2amlw' }
+    ];
 
-    items.forEach(it=>{ grid.insertAdjacentHTML('beforeend', reelHtml({id:it.id, data:()=>it})); });
-    if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
-
-    grid.querySelectorAll('button[data-act="open"]').forEach(b=> b.onclick = ()=> window.open(b.getAttribute('data-url'),'_blank'));
-    grid.querySelectorAll('button[data-act="vote"]').forEach(b=>{
-      b.onclick = async ()=>{
-        if(!db){ return alert('Add Firebase config first.'); }
-        const id = b.getAttribute('data-id');
-        const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
-        if(!name){ return alert('Please enter your name.'); }
-        const device = getDeviceId();
-        const voterKey = name.toLowerCase()+"__"+device;
-        try{
-          const exists = await votesCol(id).where('voterKey','==',voterKey).limit(1).get();
-          if(!exists.empty){ return alert('You already voted for this one from this device/name.'); }
-          await votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()});
-          await reelsCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)});
-        }catch(e){ console.error(e); alert('Vote failed. Check rules.'); }
-      };
-    });
-  }
-        const id = b.getAttribute('data-id');
-        const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
-        if(!name){ return error('Please enter your name.'); }
-        const device = getDeviceId();
-        const voterKey = name.toLowerCase()+"__"+device; // one vote per reel per device+name
-        try{
-          // prevent duplicate vote per reel per device+name
-          const exists = await votesCol(id).where('voterKey','==',voterKey).limit(1).get();
-          if(!exists.empty){ return error('You already voted for this one from this device/name. You can still vote others.'); }
-          await votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()});
-          await reelsCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)});
-          localStorage.setItem('voted_'+id+'_'+name.toLowerCase(), '1');
-        }catch(e){ console.error(e); error('Vote failed. Check connection and rules.'); }
-      };
-    });
-  }
-
-  function subscribe(){
-    if(!db){ // demo mode
-      const demo = DEFAULTS.map((d,i)=>({id:String(i+1), name:d.name, url:d.url, count: Math.floor(Math.random()*10)}));
-      const fake = {forEach: cb => demo.forEach(x=>cb({id:x.id, data:()=>x}))};
-      renderList(fake);
-      return;
+    function seedIfMissing(){
+      if(!db) return Promise.resolve();
+      const tasks = DEFAULTS.map(r=>
+        reelsCol().where('name','==', r.name).limit(1).get().then(q=>{
+          if(q.empty){ return reelsCol().add({name:r.name, url:r.url, count:0, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); }
+          return null;
+        })
+      );
+      return Promise.all(tasks);
     }
-    reelsCol().onSnapshot(renderList);
-  }
 
-  // confetti for vibes
-  (function confetti(){ const orbit=document.getElementById('orbit'); const colors=['#7cf7ff','#95ff87','#ffd166','#ff7eb6','#c4b5fd']; for(let i=0;i<40;i++){ const d=document.createElement('div'); d.className='orb'; d.style.left=Math.random()*100+'vw'; d.style.top=(-10-Math.random()*40)+'vh'; d.style.background=colors[Math.floor(Math.random()*colors.length)]; const dx=(Math.random()*60-30)+'vw'; d.style.setProperty('--dx',dx); d.style.animationDuration=(6+Math.random()*10)+'s'; orbit.appendChild(d);} })();
+    // ===== Helpers =====
+    const grid = document.getElementById('reelsGrid');
+    const topStats = document.getElementById('topStats');
+    const DID_KEY='teamvibe_device_id';
+    function getDeviceId(){ let id = localStorage.getItem(DID_KEY); if(!id){ id = Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem(DID_KEY,id);} return id; }
 
-  // boot
-  if(db){ seedIfMissing().then(subscribe); } else { subscribe(); }
+    function parseUrl(u){
+      try{ const url=new URL(u); const host=url.hostname.replace('www.','');
+        if(host.includes('youtube.com')){ const v=url.searchParams.get('v'); if(v) return {type:'yt', id:v, open:url.toString()}; }
+        if(host==='youtu.be'){ const id=url.pathname.slice(1); if(id) return {type:'yt', id, open:url.toString()}; }
+        if(host.includes('instagram.com')){ return {type:'ig', open:url.toString(), embed:url.toString()}; }
+        return {type:'unknown', open:url.toString()};
+      }catch(e){ return {type:'invalid'} }
+    }
+
+    function reelCard(it){
+      const meta = parseUrl(it.url||'');
+      const embed = (meta.type==='yt')
+        ? `<iframe allow="autoplay; encrypted-media" src="https://www.youtube.com/embed/${meta.id}?rel=0" frameborder="0" allowfullscreen></iframe>`
+        : (meta.type==='ig')
+          ? `<blockquote class="instagram-media" data-instgrm-permalink="${it.url}" style="margin:0; height:100%; overflow:auto; background:#0a0f24;"></blockquote>`
+          : `<div class="subtle" style="padding:8px">Unsupported link</div>`;
+      return `
+        <article class="card" id="card_${it.id}">
+          <h3>${it.name}</h3>
+          <div class="reel">${embed}</div>
+          <div class="row">
+            <input placeholder="Your name" id="name_${it.id}" />
+            <button class="btn" data-act="vote" data-id="${it.id}">+1 Vote</button>
+            <button class="btn" style="background:transparent;border:1px solid rgba(255,255,255,.12);color:#e7ecff" data-act="open" data-url="${meta.open||''}">Open</button>
+          </div>
+        </article>`;
+    }
+
+    function renderList(snap){
+      grid.innerHTML='';
+      const items=[]; snap.forEach(d=>{
+        const raw=d.data();
+        items.push({ id:d.id,
+          name: raw?.name ?? raw?.Name ?? 'Untitled',
+          url: raw?.url ?? raw?.URL ?? '',
+          count: raw?.count ?? raw?.Count ?? 0,
+          createdAt: raw?.createdAt ?? raw?.Createdat ?? null
+        });
+      });
+      const max = Math.max(...items.map(x=>x.count||0), 1);
+      topStats.innerHTML = items.map(it=>{
+        const pct = Math.round(((it.count||0)/max)*100);
+        return `<div class="bar"><div>🎬 ${it.name}</div><div class="track"><div class="fill" style="width:${pct}%"></div></div><div class="count">${it.count||0}</div></div>`;
+      }).join('');
+
+      items.forEach(it=> grid.insertAdjacentHTML('beforeend', reelCard(it)));
+      if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
+
+      grid.querySelectorAll('button[data-act="open"]').forEach(b=> b.onclick = ()=> window.open(b.getAttribute('data-url'),'_blank'));
+      grid.querySelectorAll('button[data-act="vote"]').forEach(b=>{
+        b.onclick = function(){
+          if(!db) return alert('Add Firebase config first.');
+          const id = b.getAttribute('data-id');
+          const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
+          if(!name) return alert('Please enter your name.');
+          const device = getDeviceId();
+          const voterKey = name.toLowerCase()+"__"+device;
+          votesCol(id).where('voterKey','==',voterKey).limit(1).get().then(q=>{
+            if(!q.empty) return alert('You already voted for this one from this device/name.');
+            return votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()})
+              .then(()=> reelsCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)}))
+              .catch(e=>{ console.error(e); alert('Vote failed.'); });
+          });
+        }
+      });
+    }
+
+    function subscribe(){
+      if(!db){
+        const demo = DEFAULTS.map((d,i)=>({id:String(i+1), name:d.name, url:d.url, count: Math.floor(Math.random()*10)}));
+        const fake = { forEach: cb => demo.forEach(x=>cb({id:x.id, data:()=>x})) };
+        renderList(fake);
+        return;
+      }
+      reelsCol().onSnapshot(renderList, err=>console.error('Snapshot error', err));
+    }
+
+    // confetti
+    (function(){ const orbit=document.getElementById('orbit'); const colors=['#7cf7ff','#95ff87','#ffd166','#ff7eb6','#c4b5fd']; for(let i=0;i<40;i++){ const d=document.createElement('div'); d.className='orb'; d.style.left=Math.random()*100+'vw'; d.style.top=(-10-Math.random()*40)+'vh'; d.style.background=colors[Math.floor(Math.random()*colors.length)]; const dx=(Math.random()*60-30)+'vw'; d.style.setProperty('--dx',dx); d.style.animationDuration=(6+Math.random()*10)+'s'; orbit.appendChild(d);} })();
+
+    // start
+    seedIfMissing().then(subscribe);
   })();
   </script>
 </body>
