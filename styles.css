@@ -51,36 +51,32 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* ===== Vote meters (highlight “liquid” fill) ===== */
-.stats{display:grid; gap:10px}
-.hlRow{display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center}
+/* ===== BEGIN: Vote meters smaller ===== */
+.stats{display:grid; gap:6px; margin-bottom:14px}
+.hlRow{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center}
 .nameHL{
   position:relative;
   display:inline-flex;
   align-items:center;
-  padding:6px 14px;
+  padding:4px 10px;
   border-radius:999px;
   font-family:Teko, Rubik;
-  font-size:22px;
+  font-size:18px;             /* smaller text */
   font-weight:700;
   color:#fff;
-  text-shadow: 0 1px 2px #000;
+  text-shadow:0 1px 2px #000; /* higher contrast on bright bar */
   isolation:isolate;
 }
 .nameHL .fill{
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  z-index:-1;
-  background: linear-gradient(90deg, var(--c1), var(--c2));
-  transform: scaleX(var(--p,0));
-  transform-origin: left;
-  transition: transform .7s cubic-bezier(.22,.61,.36,1);
-  filter: saturate(140%) blur(.2px);
+  position:absolute; inset:0; border-radius:inherit; z-index:-1;
+  background:linear-gradient(90deg, var(--c1), var(--c2));
+  transform:scaleX(var(--p,0)); transform-origin:left;
+  transition:transform .7s cubic-bezier(.22,.61,.36,1);
+  filter:saturate(140%) blur(.2px);
 }
 .hlRow .count{font-weight:800}
+/* ===== END: Vote meters smaller ===== */
 
-/* ===== Live votes box ===== */
 .live-inline{
   margin-top:12px;
   padding:10px 12px;
