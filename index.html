@@ -165,7 +165,7 @@
           const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
           if(!name) return alert('Please enter your name.');
           const device = getDeviceId();
-          const voterKey = name.toLowerCase()+"__"+device;
+          const voterKey = device; // one vote per reel per device (name only stored)
           votesCol(id).where('voterKey','==',voterKey).limit(1).get().then(q=>{
             if(!q.empty) return alert('You already voted for this one from this device/name.');
             return votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()})
