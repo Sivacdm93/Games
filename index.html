@@ -4,461 +4,87 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Team VIBE</title>
-  <meta name="description" content="Vote for the next Team VIBE activity by watching reels/shorts and casting your vote." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&family=Teko:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    :root{ --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:Rubik,system-ui,Segoe UI,Roboto,Helvetica,Arial; color:var(--ink);
-      background:radial-gradient(1200px 800px at 10% -10%, #1a2050, transparent 50%),
-                 radial-gradient(1200px 800px at 110% 10%, #35206a, transparent 50%),
-                 linear-gradient(180deg,#0b1020,#0b1020 60%, #0f1630);
-    }
-    header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg, rgba(15,22,48,.85), rgba(15,22,48,.35)); border-bottom:1px solid rgba(255,255,255,.08); -webkit-backdrop-filter:saturate(1.2) blur(6px); backdrop-filter:saturate(1.2) blur(6px)}
-    .wrap{max-width:1200px; margin:0 auto; padding:16px}
-    .brand{display:flex; align-items:center; gap:16px; justify-content:space-between; flex-wrap:wrap}
-    .title{font-family:"Fugaz One", cursive; line-height:.9; margin:6px 0; font-size: clamp(100px, 14vw, 160px); letter-spacing:2px; text-transform:uppercase; background: conic-gradient(from 0deg, #8be9ff, #ffd166, #95ff87, #ff7eb6, #8be9ff); background-size: 200% 200%; -webkit-background-clip: text; background-clip:text; color: transparent; filter: drop-shadow(0 8px 30px rgba(124,247,255,.25)); animation: hue 8s linear infinite, floaty 5s ease-in-out infinite}
+    body{margin:0;font-family:Rubik;background:#0b1020;color:#e7ecff}
+    header{position:sticky;top:0;background:#0b1020cc;backdrop-filter:blur(6px);z-index:10}
+    .wrap{max-width:1200px;margin:auto;padding:16px}
+    .title{font-family:"Fugaz One";font-size:clamp(90px,12vw,150px);background:conic-gradient(from 0deg,#8be9ff,#ffd166,#95ff87,#ff7eb6,#8be9ff);background-size:200% 200%;-webkit-background-clip:text;color:transparent;animation:hue 8s linear infinite}
     @keyframes hue{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-
-    /* Vote meters (highlight liquid fill behind names) */
-    .stats{display:grid; gap:10px; grid-template-columns:1fr; margin-top:6px}
-    .hlRow{display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px}
-    .nameHL{
-      position:relative; display:inline-block; padding:6px 14px;
-      border-radius:999px; font-family:Teko, Rubik; font-size:22px; letter-spacing:.2px;
-      overflow:hidden; isolation:isolate;
-    }
-    .nameHL .fill{
-      position:absolute; inset:0; border-radius:inherit; z-index:-1;
-      background:linear-gradient(90deg, var(--c1), var(--c2));
-      transform:scaleX(var(--p,0)); transform-origin:left;
-      transition:transform .7s cubic-bezier(.22,.61,.36,1);
-      filter: saturate(140%) blur(.2px);
-    }
-    .hlRow .count{font-weight:800}
-
-    /* Cards grid */
-    .grid{display:grid; gap:16px; grid-template-columns:repeat(3, 1fr)}
-    @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:700px){.grid{grid-template-columns:1fr}}
-
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:14px; box-shadow:0 20px 60px rgba(0,0,0,.25)}
-    .card h3{margin:2px 0 10px; font-size:22px; font-family:Teko, Rubik}
-    .reel{position:relative; width:100%; aspect-ratio:9/16; border-radius:14px; overflow:hidden; background:#0a0f24; border:1px solid rgba(255,255,255,.1)}
-    .reel iframe, .reel blockquote{position:absolute; inset:0; width:100%; height:100%}
-    .row{display:flex; gap:8px; margin-top:10px; align-items:center}
-    .row input{flex:1; min-width:120px; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:var(--ink)}
-    .btn{appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; color:#0b1020; background:linear-gradient(135deg,#7cf7ff,#95ff87); box-shadow:0 10px 30px rgba(124,247,255,.25); transition:.2s transform}
-    .btn:hover{transform:translateY(-1px)}
-    .btn.ghost{color:var(--ink); background:transparent; border:1px solid rgba(255,255,255,.12)}
-    .btn.warn{background:linear-gradient(135deg,#ff7eb6,#ffd166); color:#0b1020}
-
-    .subtle{color:var(--muted); font-size:13px}
-    .footer{margin:20px 0 60px; text-align:center; color:var(--muted); font-size:12px}
-
-    /* Live feed box under meters (in header area) */
-    .live-inline{
-      width:100%; margin-top:12px; border:1px solid rgba(255,255,255,.08);
-      border-radius:12px; padding:10px 12px;
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-    }
-    .live-title{font-weight:800; font-size:14px; color:#ffd166; margin-bottom:4px}
-    .live-body{font-size:13px; line-height:1.35; max-height:140px; overflow:auto}
-    .live-body .item{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-
-    /* User search above grid */
-    .user-search{margin:8px 0 12px; display:flex; gap:8px}
-    .user-search input{
-      flex:1; padding:10px 12px; border-radius:10px;
-      border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff;
-    }
-
-    /* Admin panel */
-    .admin{margin:12px 0 20px; padding:12px; border-radius:16px; border:1px dashed rgba(255,255,255,.2); background:rgba(255,255,255,.04)}
-    .admGrid{display:grid; gap:8px; grid-template-columns:repeat(2,1fr)}
-    @media(max-width:900px){.admGrid{grid-template-columns:1fr}}
-    .admRow{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.04)}
+    .stats{margin-top:8px}
+    .hlRow{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
+    .nameHL{position:relative;display:inline-block;padding:6px 14px;border-radius:12px;font-family:Teko;font-weight:700;font-size:22px;color:#fff;text-shadow:0 1px 2px #000;z-index:1}
+    .nameHL .fill{position:absolute;inset:0;border-radius:12px;z-index:-1;background:linear-gradient(90deg,var(--c1),var(--c2));transform:scaleX(var(--p,0));transform-origin:left;transition:transform .7s ease}
+    .count{font-weight:800}
+    .live-inline{margin-top:14px;padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.05)}
+    .live-title{font-weight:700;font-size:14px;margin-bottom:6px;color:#ffd166}
+    .live-body{font-size:13px;line-height:1.3;max-height:140px;overflow-y:auto}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:20px}
+    .card{background:#121733;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px}
+    .reel{position:relative;width:100%;aspect-ratio:9/16;background:#000;border-radius:12px;overflow:hidden}
+    .row{margin-top:10px;display:flex;gap:6px}
+    .btn{border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
+    .btn.vote{background:#95ff87;color:#000}
+    .btn.ghost{background:transparent;border:1px solid #95ff87;color:#95ff87}
+    input{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:#0d1330;color:#e7ecff}
+    .admin{margin:12px 0;padding:12px;border:1px dashed rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.05)}
+    .admGrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+    .admRow{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.06)}
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap brand">
-      <div class="title">Team VIBE</div>
-      <div class="stats" id="topStats"></div>
-
-      <!-- Live votes inline at the top (where you marked) -->
-      <div id="liveFeedInline" class="live-inline">
-        <div class="live-title">📣 Live votes</div>
-        <div id="feedBodyInline" class="live-body">No votes yet.</div>
-      </div>
+<header>
+  <div class="wrap">
+    <div class="title">Team VIBE</div>
+    <div id="topStats" class="stats"></div>
+    <div id="liveFeedInline" class="live-inline">
+      <div class="live-title">📣 Live votes</div>
+      <div id="feedBodyInline" class="live-body">No votes yet.</div>
     </div>
-  </header>
-
-  <div class="wrap" style="margin-top:10px">
-    <div id="adminPanel" class="admin" style="display:none"></div>
-
-    <!-- User search -->
-    <div class="user-search">
-      <input id="userSearch" placeholder="Search games..." />
-    </div>
-
-    <p class="subtle">Vote for your favorite reels/shorts. You can vote for <b>multiple different items</b>, but only once per item from your device + name.</p>
-    <div class="grid" id="reelsGrid"></div>
-
-    <p class="footer">Built for employee engagement & fun ✌️ – Team VIBE</p>
   </div>
+</header>
 
-  <script async src="https://www.instagram.com/embed.js" crossorigin="anonymous"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<div class="wrap">
+  <div id="adminPanel" class="admin" style="display:none"></div>
+  <div class="grid" id="reelsGrid"></div>
+</div>
 
-  <script>
-  (function(){ 'use strict';
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+(function(){
+  const ADMIN_CODE="VIBE-SECRET-1234";
+  const qp=new URLSearchParams(location.search);
+  let isAdmin=qp.get("admin")==="1"&&(localStorage.getItem("tv_admin_ok")==="1"||prompt("Enter admin code")===ADMIN_CODE);
+  if(isAdmin) localStorage.setItem("tv_admin_ok","1");
 
-    // ===== Admin code (change this to your secret) =====
-    const ADMIN_CODE = 'VIBE-SECRET-1234';
-    const qp = new URLSearchParams(location.search);
-    let isAdmin = qp.get('admin')==='1' && (localStorage.getItem('tv_admin_ok')==='1' || prompt('Enter admin code')===ADMIN_CODE);
-    if(isAdmin) localStorage.setItem('tv_admin_ok','1');
+  const firebaseConfig={apiKey:"AIzaSyAmmehhmU_ZKZ-rdnQ1e6PULO2bd1fYisg",authDomain:"team-vibe-1c3ea.firebaseapp.com",projectId:"team-vibe-1c3ea"};
+  firebase.initializeApp(firebaseConfig);
+  const db=firebase.firestore();firebase.auth().signInAnonymously();
 
-    // ===== Firebase init (your project) =====
-    const firebaseConfig = {
-      apiKey: "AIzaSyAmmehhmU_ZKZ-rdnQ1e6PULO2bd1fYisg",
-      authDomain: "team-vibe-1c3ea.firebaseapp.com",
-      projectId: "team-vibe-1c3ea",
-      storageBucket: "team-vibe-1c3ea.firebasestorage.app",
-      messagingSenderId: "970729517323",
-      appId: "1:970729517323:web:2f0034d39ca6c22702f20e"
-    };
-    let db, auth;
-    try{ firebase.initializeApp(firebaseConfig); db=firebase.firestore(); auth=firebase.auth(); auth.signInAnonymously().catch(console.warn);}catch(e){console.warn('Firebase not initialized', e)}
+  const gamesCol=()=>db.collection("TeamVibe_games");
+  const votesCol=id=>gamesCol().doc(id).collection("votes");
+  const votersLog=()=>db.collection("voters_log");
 
-    // ===== Firestore refs =====
-    const gamesCol = () => db && db.collection('TeamVibe_games'); // case-sensitive
-    const votesCol = (id) => db && gamesCol().doc(id).collection('votes');
-    const votersLog = () => db && db.collection('voters_log');
+  const palette=[["#7cf7ff","#95ff87"],["#ffd166","#7cf7ff"],["#ff7eb6","#ffd166"],["#c4b5fd","#7cf7ff"]];
 
-    // ===== Provided 30-game master list (for Import button) =====
-    const GAMES_MASTER = [
-      { name: "Drop the Pen in bottle using Mobile camera", url: "https://www.instagram.com/reel/DNP0ZztvnvZ/?igsh=M3h2M3Z5eGE2amlw" },
-      { name: "Fan the Cup", url: "https://www.instagram.com/reel/DMvARSAz6qY/?igsh=MTh2cXp2M2hndW1rbA%3D%3D" },
-      { name: "Strick standing Challenge", url: "https://www.instagram.com/reel/DNQEm21vdpB/?igsh=c2d2bTZyc255aTc=" },
-      { name: "Hanger Transfer", url: "https://www.instagram.com/reel/DOBPgExCLgo/?igsh=MTJpazR0aHBjcjdibw==" },
-      { name: "Multiple games in this Reel", url: "https://www.instagram.com/reel/DOGK-8KEskO/?igsh=MWl6cTg5cXhldmRibA==" },
-      { name: "Do the Opposites", url: "https://www.instagram.com/reel/DOycseHE_NS/?igsh=eTI4ZTJ4YnRjYzM4" },
-      { name: "Mission Bottle escape", url: "https://www.instagram.com/reel/DMfKLvcvbwF/?igsh=MXI0bDRicTV1ZmdlcA==" },
-      { name: "Ball Gate", url: "https://www.instagram.com/reel/DLZLzUpy9JE/?igsh=MXg5dnYwaDk4ZDd0aQ==" },
-      { name: "Catch it if you can", url: "https://www.instagram.com/reel/DMaaKp2TY1I/?igsh=MTk3MDYzNzA2cDI0bQ==" },
-      { name: "Whats hiding in the cup?", url: "https://www.instagram.com/reel/DLZ39itSv5I/?igsh=MWkweXdpb2w2djFsNA==" },
-      { name: "Spin and Drop the ball with bottle", url: "https://www.instagram.com/reel/DNFGKpSSJX1/?igsh=MTh0OXQ5OTd3bHUxMQ==" },
-      { name: "Don't Clap At the Same Time", url: "https://www.instagram.com/reel/DK14cTbpnXc/?igsh=MWluNmtwYTU3ZHl0cA==" },
-      { name: "Don't follow the hand", url: "https://www.instagram.com/reel/DLm-ckQSnaZ/?igsh=aTQxbW80cXo5eHF6" },
-      { name: "Fill the cup with chocolate with papercup in both hand", url: "https://www.instagram.com/reel/DNlQfNvSZuO/?igsh=bHBxdzg3Nng1ZnNr" },
-      { name: "Collect the cup with straw", url: "https://www.instagram.com/reel/DNqUyH0o_On/?igsh=MXFhNnF5ZGozdmo1NA==" },
-      { name: "Flip the bottle", url: "https://youtube.com/shorts/JHU9ac717Tw?si=iho1cq6aS14VMxFz" },
-      { name: "Blow the Cup with balloon", url: "https://www.instagram.com/reel/DNQYH_YSrvx/?igsh=MXRjYWlybHc5ZmV5bA==" },
-      { name: "Tower Cup Challenge", url: "https://www.instagram.com/reel/DLZp5RYv7aY/?igsh=NTV6Z2hzcXBwNDF0" },
-      { name: "Communication challenge", url: "https://youtube.com/shorts/RO0uJrbk1kc?si=c24-sWUk3MrDTOl2" },
-      { name: "Don't Drop the Balloon", url: "https://youtube.com/shorts/N_xj-Zc762U?si=oJLotePSpF1qAzhC" },
-      { name: "Head, Shoulder,Knees and pick the  item", url: "https://youtube.com/shorts/m_QEcL7dK7I?si=_6uZ3ArVQhS7lCj3" },
-      { name: "Build the tower with Marshmallow", url: "https://youtu.be/7ZMuHZv47bQ?si=VMx2ypYdEXjBgfz9" },
-      { name: "Goal the Ball", url: "https://youtube.com/shorts/bQYxwodUM2c?si=WlULSCE0Sh4vSUE-" },
-      { name: "Hold the Paper with Straw", url: "https://youtube.com/shorts/mJgk6DLG7t0?si=fPG24w4lrdbg1nnG" },
-      { name: "Build the pyramid with cup in head", url: "https://youtu.be/e-qehXWt36Y?si=QNK8HizfkpOFXmCE" },
-      { name: "Cup and straw Balance", url: "https://youtube.com/shorts/PSDLwatlT2Q?si=jCuzv0y18d1uB3a6" },
-      { name: "Hold the ball with Pen", url: "https://www.instagram.com/reel/DIog4Lnh-JV/?igsh=MWRiMGZkd2V1NWU3OQ==" },
-      { name: "Spin and jump into your paper", url: "https://www.instagram.com/reel/DKPfi9ChQkg/?igsh=MTF2dWFwZ3NiMmMzMA==" },
-      { name: "Transfer the ball with A4 paper", url: "https://www.instagram.com/reel/DMhVD5wRqa7/?igsh=emxtN2MzdzJ4ZDk4" },
-      { name: "Catch the ball", url: "https://youtube.com/shorts/2cWj0XGiwGY?si=6J2kxLH1UWkUTM1y" }
-    ];
+  function getDeviceId(){const k="device_id";let id=localStorage.getItem(k);if(!id){id=Math.random().toString(36).slice(2);localStorage.setItem(k,id);}return id;}
 
-    const palette = [ ['#7cf7ff','#95ff87'], ['#ffd166','#7cf7ff'], ['#ff7eb6','#ffd166'], ['#95ff87','#c4b5fd'] ];
+  function parseUrl(u){try{const url=new URL(u);const h=url.hostname.replace("www.","");if(h.includes("youtube")||h==="youtu.be"){if(h==="youtu.be")return{type:"yt",id:url.pathname.slice(1)};if(url.searchParams.get("v"))return{type:"yt",id:url.searchParams.get("v")};const m=url.pathname.match(/\/shorts\/([\w-]+)/);if(m)return{type:"yt",id:m[1]};}if(h.includes("instagram.com"))return{type:"ig",embed:u};return{type:"unk"}}catch(e){return{type:"unk"}}}
 
-    // ===== Helpers =====
-    const grid = document.getElementById('reelsGrid');
-    const topStats = document.getElementById('topStats');
-    const adminPanel = document.getElementById('adminPanel');
+  function reelCard(it){const m=parseUrl(it.url||"");const embed=m.type==="yt"?`<iframe src="https://www.youtube.com/embed/${m.id}" allowfullscreen></iframe>`:m.type==="ig"?`<blockquote class="instagram-media" data-instgrm-permalink="${it.url}"></blockquote>`:`<div>Unsupported</div>`;return `<div class="card"><h3>${it.name}</h3><div class="reel">${embed}</div><div class="row"><input id="n_${it.id}" placeholder="Your name"><button class="btn vote" data-id="${it.id}" data-name="${encodeURIComponent(it.name)}">+1 Vote</button></div></div>`}
 
-    const DID_KEY='teamvibe_device_id';
-    function getDeviceId(){ let id = localStorage.getItem(DID_KEY); if(!id){ id = Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem(DID_KEY,id);} return id; }
+  function renderBars(items){const max=Math.max(...items.map(x=>x.count||0),1);document.getElementById("topStats").innerHTML=items.map((it,i)=>{const p=(it.count||0)/max;const[c1,c2]=palette[i%palette.length];return `<div class="hlRow"><span class="nameHL" style="--p:${p};--c1:${c1};--c2:${c2}"><span class="fill"></span>${it.name}</span><span class="count">${it.count||0}</span></div>`}).join("")}
 
-    // Robust URL parser (supports YouTube shorts/watch/youtu.be + Instagram)
-    function parseUrl(u){
-      try{
-        const url = new URL(u);
-        const host = url.hostname.replace('www.','');
+  function render(items){const vis=isAdmin?items:items.filter(x=>x.featured);vis.sort((a,b)=>(b.count||0)-(a.count||0));renderBars(vis);const g=document.getElementById("reelsGrid");g.innerHTML=vis.map(it=>reelCard(it)).join("");g.querySelectorAll(".btn.vote").forEach(b=>b.onclick=()=>{const id=b.dataset.id;const n=document.getElementById("n_"+id).value||"Anon";const device=getDeviceId();votesCol(id).where("voterKey","==",device).get().then(q=>{if(!q.empty)return alert("Already voted");votesCol(id).add({voterName:n,voterKey:device,ts:firebase.firestore.FieldValue.serverTimestamp()});gamesCol().doc(id).update({count:firebase.firestore.FieldValue.increment(1)});votersLog().add({voterName:n,gameId:id,gameName:decodeURIComponent(b.dataset.name),ts:firebase.firestore.FieldValue.serverTimestamp()});});});renderAdmin(items)}
 
-        // YouTube
-        if (host.includes('youtube.com') || host === 'youtu.be') {
-          if (host === 'youtu.be') {
-            const id = url.pathname.slice(1);
-            if (id) return {type:'yt', id, open:url.toString()};
-          }
-          const v = url.searchParams.get('v');
-          if (v) return {type:'yt', id:v, open:url.toString()};
-          const shorts = url.pathname.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
-          if (shorts && shorts[1]) return {type:'yt', id:shorts[1], open:url.toString()};
-          return {type:'unknown', open:url.toString()};
-        }
+  function renderAdmin(items){if(!isAdmin)return;const p=document.getElementById("adminPanel");p.style.display="block";p.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:8px"><button id="saveBtn" class="btn">Save Selected</button><button id="resetFeat" class="btn warn">Reset votes (featured)</button><button id="resetSel" class="btn warn">Reset votes (selected)</button></div><div class="admGrid">${items.map(it=>`<div class="admRow"><div><input type="checkbox" class="chk" data-id="${it.id}" ${it.featured?"checked":""}> ${it.name}</div><span>${it.count||0}</span></div>`).join("")}</div>`;p.querySelector("#saveBtn").onclick=async()=>{const sel=[...p.querySelectorAll(".chk")].filter(c=>c.checked).map(c=>c.dataset.id);const batch=db.batch();items.forEach(it=>batch.update(gamesCol().doc(it.id),{featured:sel.includes(it.id)}));await batch.commit();alert("Selected saved")};async function reset(ids){for(const id of ids){let s=await votesCol(id).get();s.forEach(d=>votesCol(id).doc(d.id).delete());await gamesCol().doc(id).update({count:0})}let l=await votersLog().get();l.forEach(d=>votersLog().doc(d.id).delete());}p.querySelector("#resetFeat").onclick=()=>reset(items.filter(x=>x.featured).map(x=>x.id));p.querySelector("#resetSel").onclick=()=>reset([...p.querySelectorAll(".chk")].filter(c=>c.checked).map(c=>c.dataset.id));}
 
-        // Instagram
-        if (host.includes('instagram.com')) {
-          return {type:'ig', open:url.toString(), embed:url.toString()};
-        }
+  function live(){votersLog().orderBy("ts","desc").limit(10).onSnapshot(s=>{const arr=[];s.forEach(d=>arr.push(d.data()));document.getElementById("feedBodyInline").innerHTML=arr.length?arr.map(v=>`• <b>${v.voterName}</b> voted <i>${v.gameName}</i>`).join("<br>"):"No votes yet."})}
 
-        return {type:'unknown', open:url.toString()};
-      }catch(e){ return {type:'invalid'} }
-    }
-
-    function reelCard(it, idx){
-      const meta = parseUrl(it.url||'');
-      const embed = (meta.type==='yt')
-        ? `<iframe allow="autoplay; encrypted-media" src="https://www.youtube.com/embed/${meta.id}?rel=0" frameborder="0" allowfullscreen></iframe>`
-        : (meta.type==='ig')
-          ? `<blockquote class="instagram-media" data-instgrm-permalink="${it.url}" style="margin:0; height:100%; overflow:auto; background:#0a0f24;"></blockquote>`
-          : `<div class="subtle" style="padding:8px">Unsupported link</div>`;
-      return `
-        <article class="card" id="card_${it.id}">
-          <h3>${it.name}</h3>
-          <div class="reel">${embed}</div>
-          <div class="row">
-            <input placeholder="Your name" id="name_${it.id}" />
-            <button class="btn" data-act="vote" data-id="${it.id}" data-name="${encodeURIComponent(it.name)}">+1 Vote</button>
-            <button class="btn ghost" data-act="open" data-url="${meta.open||''}">Open</button>
-          </div>
-        </article>`;
-    }
-
-    // Name-highlight style progress (liquid fill)
-    function renderTopBars(items){
-      const max = Math.max(...items.map(x=>x.count||0), 1);
-      topStats.innerHTML = items.map((it,i)=>{
-        const pct = (it.count||0) / max;
-        const [c1,c2] = palette[i%palette.length];
-        return `<div class="hlRow">
-          <span class="nameHL" style="--p:${pct}; --c1:${c1}; --c2:${c2}">
-            <span class="fill"></span>${it.name}
-          </span>
-          <span class="count">${it.count||0}</span>
-        </div>`;
-      }).join('');
-    }
-
-    function renderAdmin(items){
-      if(!isAdmin){ adminPanel.style.display='none'; return; }
-      adminPanel.style.display='block';
-      adminPanel.innerHTML = `
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
-          <div><b>Admin</b> – Toggle <b>Featured</b> on any number of games. Users only see featured ones.</div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap">
-            <input id="newName" placeholder="Game name" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff; min-width:220px" />
-            <input id="newUrl" placeholder="Game URL (IG/YouTube)" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff; min-width:320px" />
-            <button class="btn" id="addGameBtn">Add game</button>
-            <button class="btn" id="saveFeatured">Save Featured</button>
-            <button class="btn warn" id="resetVotes">Reset votes (featured)</button>
-            <button class="btn ghost" id="viewVoters">View recent voters</button>
-            <button class="btn ghost" id="importGames">Import games (add missing)</button>
-          </div>
-        </div>
-        <!-- Admin search -->
-        <input id="adminSearch" placeholder="Search admin list..." style="margin-top:8px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0d1330;color:#e7ecff;width:100%">
-        <div class="admGrid" style="margin-top:10px">${items.map(it=>`
-          <div class="admRow">
-            <div style="display:flex; align-items:center; gap:10px">
-              <input type="checkbox" class="featChk" data-id="${it.id}" ${it.featured?'checked':''} />
-              <span>${it.name}</span>
-            </div>
-            <span class="subtle">${it.count||0} votes</span>
-          </div>`).join('')}</div>
-        <div id="votersBox" class="subtle" style="margin-top:10px"></div>
-      `;
-
-      // Admin filter
-      const s = document.getElementById('adminSearch');
-      s.oninput = () => {
-        const val = s.value.toLowerCase();
-        adminPanel.querySelectorAll('.admRow').forEach(row=>{
-          const name = row.querySelector('span').textContent.toLowerCase();
-          row.style.display = name.includes(val) ? '' : 'none';
-        });
-      };
-
-      // Add game
-      document.getElementById('addGameBtn').onclick = async ()=>{
-        const name = (document.getElementById('newName').value||'').trim();
-        const url  = (document.getElementById('newUrl').value||'').trim();
-        if(!name || !url) return alert('Enter both name and URL.');
-        try{
-          const q = await gamesCol().where('name','==', name).limit(1).get();
-          if(!q.empty){ alert('A game with this name already exists.'); return; }
-          await gamesCol().add({name, url, count:0, featured:false, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
-          document.getElementById('newName').value='';
-          document.getElementById('newUrl').value='';
-          alert('Game added.');
-        }catch(e){ console.error(e); alert('Add failed. Check Firestore rules allow create.'); }
-      };
-
-      // Save featured
-      document.getElementById('saveFeatured').onclick = async ()=>{
-        const chks = [...adminPanel.querySelectorAll('.featChk')];
-        const selected = chks.filter(c=>c.checked).map(c=>c.getAttribute('data-id'));
-        try{
-          const batch = db.batch();
-          items.forEach(it=>{ batch.update(gamesCol().doc(it.id), {featured: selected.includes(it.id)}); });
-          await batch.commit();
-          alert('Featured saved.');
-        }catch(e){ console.error(e); alert('Saving failed.'); }
-      };
-
-      // Reset votes (featured) + clear voters_log
-      document.getElementById('resetVotes').onclick = async ()=>{
-        if(!confirm('Set counts to 0 and delete vote logs for ALL featured items? Live comments will be cleared.')) return;
-        try{
-          // 1) Clear votes subcollections + reset counts for FEATURED items
-          for(const it of items.filter(x=>x.featured)){
-            let snap = await votesCol(it.id).limit(400).get();
-            while(!snap.empty){
-              const batch = db.batch();
-              snap.forEach(doc=> batch.delete(votesCol(it.id).doc(doc.id)));
-              await batch.commit();
-              snap = await votesCol(it.id).limit(400).get();
-            }
-            await gamesCol().doc(it.id).update({count:0});
-          }
-          // 2) Clear voters_log collection in chunks
-          let lsnap = await votersLog().limit(400).get();
-          while(!lsnap.empty){
-            const lbatch = db.batch();
-            lsnap.forEach(doc=> lbatch.delete(votersLog().doc(doc.id)));
-            await lbatch.commit();
-            lsnap = await votersLog().limit(400).get();
-          }
-          alert('Votes & live comments reset complete.');
-        }catch(e){ console.error(e); alert('Reset failed. Ensure rules allow delete for /votes/* and /voters_log.'); }
-      };
-
-      // View recent voters (for featured)
-      document.getElementById('viewVoters').onclick = async ()=>{
-        try{
-          const ids = items.filter(x=>x.featured).map(x=>x.id);
-          let list = [];
-          for(const id of ids){
-            const snap = await votesCol(id).orderBy('ts','desc').limit(50).get();
-            snap.forEach(d=> list.push({game: items.find(x=>x.id===id)?.name || id, ...d.data()}));
-          }
-          list.sort((a,b)=> (b.ts?.seconds||0)-(a.ts?.seconds||0));
-          const html = '<div><b>Recent voters</b></div>' + list.map(v=>`<div>• ${v.voterName||'Anonymous'} <span class="subtle">(${v.game})</span></div>`).join('');
-          document.getElementById('votersBox').innerHTML = html || 'No votes yet.';
-        }catch(e){ console.error(e); alert('Could not load voters'); }
-      };
-
-      // Import master list (adds only missing by name)
-      document.getElementById('importGames').onclick = async ()=>{
-        if(!confirm('Add any missing items from the 30-game list?')) return;
-        try{
-          for(const g of GAMES_MASTER){
-            const q = await gamesCol().where('name','==', g.name).limit(1).get();
-            if(q.empty){ await gamesCol().add({name:g.name, url:g.url, count:0, featured:false, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); }
-          }
-          alert('Import complete. Refresh to see new items.');
-        }catch(e){ console.error(e); alert('Import failed. Ensure rules allow create.'); }
-      };
-    }
-
-    function reelEvents(items){
-      if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
-      grid.querySelectorAll('button[data-act="open"]').forEach(b=> b.onclick = ()=> window.open(b.getAttribute('data-url'),'_blank'));
-      grid.querySelectorAll('button[data-act="vote"]').forEach(b=>{
-        b.onclick = function(){
-          if(!db) return alert('Add Firebase config first.');
-          const id = b.getAttribute('data-id');
-          const gname = decodeURIComponent(b.getAttribute('data-name'));
-          const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
-          if(!name) return alert('Please enter your name.');
-          const device = getDeviceId();
-          const voterKey = device; // one vote per reel per device
-          votesCol(id).where('voterKey','==',voterKey).limit(1).get().then(q=>{
-            if(!q.empty) return alert('You already voted for this one from this device. You can vote others.');
-            return votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()})
-              .then(()=> votersLog().add({voterName:name, gameId:id, gameName:gname, device, ts: firebase.firestore.FieldValue.serverTimestamp()}))
-              .then(()=> gamesCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)}))
-              .catch(e=>{ console.error(e); alert('Vote failed.'); });
-          });
-        }
-      });
-    }
-
-    function renderList(snap){
-      const items=[]; snap.forEach(d=>{
-        const raw=d.data();
-        items.push({
-          id:d.id,
-          name: raw?.name ?? raw?.Name ?? 'Untitled',
-          url: raw?.url ?? raw?.URL ?? '',
-          count: raw?.count ?? raw?.Count ?? 0,
-          featured: !!(raw?.featured),
-          createdAt: raw?.createdAt ?? raw?.Createdat ?? null
-        });
-      });
-
-      const visible = isAdmin ? items : items.filter(x=>x.featured);
-      if(visible.length===0){
-        topStats.innerHTML='';
-        grid.innerHTML = '<div class="subtle">No items are selected right now. Check back later.</div>';
-      } else {
-        // Sort by votes (desc)
-        visible.sort((a,b)=> (b.count||0) - (a.count||0)).reverse();
-        renderTopBars(visible);
-        grid.innerHTML='';
-        visible.forEach((it,i)=> grid.insertAdjacentHTML('beforeend', reelCard(it,i)));
-        reelEvents(visible);
-      }
-
-      renderAdmin(items);
-    }
-
-    function votesLive(){
-      const feedBody = document.getElementById('feedBodyInline');
-      try{
-        votersLog().orderBy('ts','desc').limit(10).onSnapshot(snap=>{
-          const arr=[]; snap.forEach(d=> arr.push(d.data()));
-          if(arr.length===0){ feedBody.textContent='No votes yet.'; return; }
-          feedBody.innerHTML = arr.map(v =>
-            `<div class="item">• <b>${v.voterName||'Anonymous'}</b> voted <i>${v.gameName||v.gameId}</i></div>`
-          ).join('');
-        }, err=>{ console.warn('voters_log read failed', err); });
-      }catch(e){ console.warn('Live feed not available', e); }
-    }
-
-    function subscribe(){
-      if(!db){
-        grid.innerHTML = '<div class="subtle">Connect Firebase to load items.</div>';
-        return;
-      }
-      gamesCol().onSnapshot(renderList, err=>console.error('Snapshot error', err));
-      votesLive();
-
-      // user search filter
-      const userSearchInput = document.getElementById('userSearch');
-      if (userSearchInput) {
-        userSearchInput.addEventListener('input', () => {
-          const q = userSearchInput.value.trim().toLowerCase();
-          document.querySelectorAll('#reelsGrid .card').forEach(card=>{
-            const h3 = card.querySelector('h3')?.textContent?.toLowerCase() || '';
-            card.style.display = h3.includes(q) ? '' : 'none';
-          });
-        });
-      }
-    }
-
-    subscribe();
-  })();
-  </script>
+  gamesCol().onSnapshot(s=>{const items=[];s.forEach(d=>items.push({id:d.id,...d.data()}));render(items)});live();
+})();
+</script>
 </body>
 </html>
