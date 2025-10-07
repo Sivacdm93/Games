@@ -1,6 +1,6 @@
 // Admin secret used when you open the site with ?admin=1
 // Example: https://<user>.github.io/Games/?admin=1
-window.ADMIN_CODE = "VIBE@123";
+window.ADMIN_CODE = "VIBE-SECRET-1234";
 
 // Your Firebase web app config
 window.firebaseConfig = {
