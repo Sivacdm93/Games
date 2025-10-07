@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Team VIBE</title>
-  <meta name="description" content="Vote for the next Team VIBE game by watching the reels/shorts and casting your vote." />
+  <meta name="description" content="Vote for the next Team VIBE activity by watching the reels/shorts and casting your vote." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{ --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; }
+    :root{ --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; --bar1:#7cf7ff; --bar2:#95ff87; --bar3:#ffd166; --bar4:#ff7eb6; }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{ margin:0; font-family:Rubik,system-ui,Segoe UI,Roboto,Helvetica,Arial; color:var(--ink);
@@ -22,27 +22,48 @@
     .title{font-family:"Fugaz One", cursive; line-height:.9; margin:6px 0; font-size: clamp(100px, 14vw, 160px); letter-spacing:2px; text-transform:uppercase; background: conic-gradient(from 0deg, #8be9ff, #ffd166, #95ff87, #ff7eb6, #8be9ff); background-size: 200% 200%; -webkit-background-clip: text; background-clip:text; color: transparent; filter: drop-shadow(0 8px 30px rgba(124,247,255,.25)); animation: hue 8s linear infinite, floaty 5s ease-in-out infinite}
     @keyframes hue{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
     @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+    /* Top stats */
     .stats{display:grid; gap:10px; grid-template-columns:1fr; margin-top:6px}
-    .bar{display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center}
-    .bar .track{height:12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:999px; overflow:hidden}
-    .bar .fill{height:100%; background:linear-gradient(90deg,#7cf7ff,#95ff87); width:0%}
-    .bar .count{font-weight:800}
+    .bar{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center}
+    .bar .name{display:flex; align-items:center; gap:10px; font-family:Teko, Rubik, system-ui; letter-spacing:.4px; font-size:22px}
+    .bar .badge{width:14px; height:14px; border-radius:4px; opacity:.9}
+    .track{height:14px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:999px; overflow:hidden}
+    .fill{height:100%; width:0%; background:linear-gradient(90deg, var(--c1), var(--c2)); box-shadow:0 0 20px rgba(255,255,255,.15) inset; transition: width .7s cubic-bezier(.22,.61,.36,1);
+      position:relative}
+    .fill::after{content:""; position:absolute; inset:0; background:linear-gradient(120deg, rgba(255,255,255,.25), rgba(255,255,255,0) 60%); transform:skewX(-20deg) translateX(-100%); animation: shimmer 2.2s infinite}
+    @keyframes shimmer{to{transform:skewX(-20deg) translateX(120%)}}
+    .count{font-weight:800}
+
+    /* Grid of reels */
     .grid{display:grid; gap:16px; grid-template-columns:repeat(3, 1fr)}
     @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:700px){.grid{grid-template-columns:1fr}}
+
     .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:14px; box-shadow:0 20px 60px rgba(0,0,0,.25)}
-    .card h3{margin:2px 0 10px; font-size:18px}
+    .card h3{margin:2px 0 10px; font-size:22px; font-family:Teko, Rubik}
+    .nameColor1{color:#8be9ff}.nameColor2{color:#95ff87}.nameColor3{color:#ffd166}.nameColor4{color:#ff7eb6}
     .reel{position:relative; width:100%; aspect-ratio:9/16; border-radius:14px; overflow:hidden; background:#0a0f24; border:1px solid rgba(255,255,255,.1)}
     .reel iframe, .reel blockquote{position:absolute; inset:0; width:100%; height:100%}
     .row{display:flex; gap:8px; margin-top:10px; align-items:center}
     .row input{flex:1; min-width:120px; padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:var(--ink)}
     .btn{appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer; color:#0b1020; background:linear-gradient(135deg,#7cf7ff,#95ff87); box-shadow:0 10px 30px rgba(124,247,255,.25); transition:.2s transform}
     .btn:hover{transform:translateY(-1px)}
+    .btn.ghost{color:var(--ink); background:transparent; border:1px solid rgba(255,255,255,.12)}
+    .btn.warn{background:linear-gradient(135deg,#ff7eb6,#ffd166); color:#0b1020}
+
     .subtle{color:var(--muted); font-size:13px}
     .footer{margin:20px 0 60px; text-align:center; color:var(--muted); font-size:12px}
+
     .orbit{position:fixed; pointer-events:none; inset:0; overflow:hidden}
     .orb{position:absolute; width:10px; height:10px; border-radius:2px; opacity:.7; animation: drift linear infinite}
     @keyframes drift{to{transform:translate3d(var(--dx), 100vh, 0) rotate(720deg)}}
+
+    /* Admin panel */
+    .admin{margin:12px 0 20px; padding:12px; border-radius:16px; border:1px dashed rgba(255,255,255,.2); background:rgba(255,255,255,.04)}
+    .admGrid{display:grid; gap:8px; grid-template-columns:repeat(2,1fr)}
+    @media(max-width:900px){.admGrid{grid-template-columns:1fr}}
+    .admRow{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.04)}
   </style>
 </head>
 <body>
@@ -54,6 +75,8 @@
   </header>
 
   <div class="wrap" style="margin-top:10px">
+    <div id="adminPanel" class="admin" style="display:none"></div>
+
     <p class="subtle">Vote for your favorite reels/shorts. You can vote for <b>multiple different items</b>, but only once per item from your device + name.</p>
     <div class="grid" id="reelsGrid"></div>
     <p class="footer">Built for employee engagement & fun ✌️ – Team VIBE</p>
@@ -68,6 +91,12 @@
 
   <script>
   (function(){ 'use strict';
+    // ===== Admin code (change this to your secret) =====
+    const ADMIN_CODE = 'VIBE-SECRET-1234';
+    const qp = new URLSearchParams(location.search);
+    let isAdmin = qp.get('admin')==='1' && (localStorage.getItem('tv_admin_ok')==='1' || prompt('Enter admin code')===ADMIN_CODE);
+    if(isAdmin) localStorage.setItem('tv_admin_ok','1');
+
     // ===== Firebase init =====
     const firebaseConfig = { 
       apiKey: "AIzaSyAmmehhmU_ZKZ-rdnQ1e6PULO2bd1fYisg",
@@ -81,31 +110,14 @@
     try{ firebase.initializeApp(firebaseConfig); db=firebase.firestore(); auth=firebase.auth(); auth.signInAnonymously().catch(console.warn);}catch(e){console.warn('Firebase not initialized', e)}
 
     // ===== Firestore refs =====
-    const reelsCol = () => db && db.collection('TeamVibe_games'); // case-sensitive
-    const votesCol = (id) => db && reelsCol().doc(id).collection('votes');
-
-    // ===== Defaults (optional) =====
-    const DEFAULTS = [
-      { name:'Hanger transfer', url:'https://www.instagram.com/reel/DOBPgExCLgo/?igsh=MTJpazR0aHBjcjdibw==' },
-      { name:'Do the opposite', url:'https://www.instagram.com/reel/DOycseHE_NS/?igsh=eTI4ZTJ4YnRjYzM4' },
-      { name:'Mission - Bottle Escape', url:'https://www.instagram.com/reel/DMfKLvcvbwF/?igsh=MXI0bDRicTV1ZmdlcA==' },
-      { name:'Drop the pen into bottle using phone camera', url:'https://www.instagram.com/reel/DNP0ZztvnvZ/?igsh=M3h2M3Z5eGE2amlw' }
-    ];
-
-    function seedIfMissing(){
-      if(!db) return Promise.resolve();
-      const tasks = DEFAULTS.map(r=>
-        reelsCol().where('name','==', r.name).limit(1).get().then(q=>{
-          if(q.empty){ return reelsCol().add({name:r.name, url:r.url, count:0, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); }
-          return null;
-        })
-      );
-      return Promise.all(tasks);
-    }
+    const gamesCol = () => db && db.collection('TeamVibe_games'); // case-sensitive
+    const votesCol = (id) => db && gamesCol().doc(id).collection('votes');
+    const votersLog = () => db && db.collection('voters_log'); // optional, for names table
 
     // ===== Helpers =====
     const grid = document.getElementById('reelsGrid');
     const topStats = document.getElementById('topStats');
+    const adminPanel = document.getElementById('adminPanel');
     const DID_KEY='teamvibe_device_id';
     function getDeviceId(){ let id = localStorage.getItem(DID_KEY); if(!id){ id = Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem(DID_KEY,id);} return id; }
 
@@ -118,79 +130,168 @@
       }catch(e){ return {type:'invalid'} }
     }
 
-    function reelCard(it){
+    const palette = [ ['#7cf7ff','#95ff87'], ['#ffd166','#7cf7ff'], ['#ff7eb6','#ffd166'], ['#95ff87','#c4b5fd'] ];
+
+    function reelCard(it, idx){
       const meta = parseUrl(it.url||'');
       const embed = (meta.type==='yt')
         ? `<iframe allow="autoplay; encrypted-media" src="https://www.youtube.com/embed/${meta.id}?rel=0" frameborder="0" allowfullscreen></iframe>`
         : (meta.type==='ig')
           ? `<blockquote class="instagram-media" data-instgrm-permalink="${it.url}" style="margin:0; height:100%; overflow:auto; background:#0a0f24;"></blockquote>`
           : `<div class="subtle" style="padding:8px">Unsupported link</div>`;
+      const nameClr = 'nameColor'+((idx%4)+1);
       return `
         <article class="card" id="card_${it.id}">
-          <h3>${it.name}</h3>
+          <h3 class="${nameClr}">${it.name}</h3>
           <div class="reel">${embed}</div>
           <div class="row">
             <input placeholder="Your name" id="name_${it.id}" />
-            <button class="btn" data-act="vote" data-id="${it.id}">+1 Vote</button>
-            <button class="btn" style="background:transparent;border:1px solid rgba(255,255,255,.12);color:#e7ecff" data-act="open" data-url="${meta.open||''}">Open</button>
+            <button class="btn" data-act="vote" data-id="${it.id}" data-name="${encodeURIComponent(it.name)}">+1 Vote</button>
+            <button class="btn ghost" data-act="open" data-url="${meta.open||''}">Open</button>
           </div>
         </article>`;
     }
 
+    function renderTopBars(items){
+      const max = Math.max(...items.map(x=>x.count||0), 1);
+      topStats.innerHTML = items.map((it,i)=>{
+        const pct = Math.round(((it.count||0)/max)*100);
+        const c1 = palette[i%palette.length][0];
+        const c2 = palette[i%palette.length][1];
+        return `<div class="bar" style="--c1:${c1}; --c2:${c2}">
+          <div class="name"><span class="badge" style="background:${c1}"></span>${it.name}</div>
+          <div style="display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center">
+            <div class="track"><div class="fill" style="background:linear-gradient(90deg, ${c1}, ${c2}); width:${pct}%"></div></div>
+            <div class="count">${it.count||0}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderAdmin(items){
+      if(!isAdmin){ adminPanel.style.display='none'; return; }
+      adminPanel.style.display='block';
+      const featuredCount = items.filter(x=>x.featured).length;
+      adminPanel.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
+          <div><b>Admin</b> – Select exactly <b>4 featured</b> games for users. Currently: <b>${featuredCount}</b></div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <button class="btn" id="saveFeatured">Save Featured</button>
+            <button class="btn warn" id="resetVotes">Reset votes for featured</button>
+            <button class="btn ghost" id="viewVoters">View recent voters</button>
+          </div>
+        </div>
+        <div class="admGrid" style="margin-top:10px">${items.map(it=>`
+          <div class="admRow">
+            <div style="display:flex; align-items:center; gap:10px">
+              <input type="checkbox" class="featChk" data-id="${it.id}" ${it.featured?'checked':''} />
+              <span>${it.name}</span>
+            </div>
+            <span class="subtle">${it.count||0} votes</span>
+          </div>`).join('')}</div>
+        <div id="votersBox" class="subtle" style="margin-top:10px"></div>
+      `;
+      // Save featured
+      document.getElementById('saveFeatured').onclick = async ()=>{
+        const chks = [...adminPanel.querySelectorAll('.featChk')];
+        const selected = chks.filter(c=>c.checked).map(c=>c.getAttribute('data-id'));
+        if(selected.length!==4){ alert('Please select exactly 4 items.'); return; }
+        try{
+          const batch = db.batch();
+          items.forEach(it=>{ batch.update(gamesCol().doc(it.id), {featured: selected.includes(it.id)}); });
+          await batch.commit();
+          alert('Featured set saved. Users will now see the selected 4.');
+        }catch(e){ console.error(e); alert('Saving failed.'); }
+      };
+      // Reset votes for featured
+      document.getElementById('resetVotes').onclick = async ()=>{
+        if(!confirm('This will set counts to 0 and delete vote logs for the 4 featured items. Continue?')) return;
+        try{
+          for(const it of items.filter(x=>x.featured)){
+            // delete votes subcollection
+            const vs = await votesCol(it.id).get();
+            const batchDel = db.batch();
+            vs.forEach(doc=> batchDel.delete(votesCol(it.id).doc(doc.id)) );
+            await batchDel.commit();
+            // reset count
+            await gamesCol().doc(it.id).update({count:0});
+          }
+          alert('Votes reset.');
+        }catch(e){ console.error(e); alert('Reset failed. Check Firestore rules allow update & delete on /votes subcollection.'); }
+      };
+      // View voters (recent 50 for featured)
+      document.getElementById('viewVoters').onclick = async ()=>{
+        try{
+          const ids = items.filter(x=>x.featured).map(x=>x.id);
+          let list = [];
+          for(const id of ids){
+            const snap = await votesCol(id).orderBy('ts','desc').limit(50).get();
+            snap.forEach(d=> list.push({game: items.find(x=>x.id===id)?.name || id, ...d.data()}));
+          }
+          list.sort((a,b)=> (b.ts?.seconds||0)-(a.ts?.seconds||0));
+          const html = '<div><b>Recent voters</b></div>' + list.map(v=>`<div>• ${v.voterName||'Anonymous'} <span class="subtle">(${v.game})</span></div>`).join('');
+          document.getElementById('votersBox').innerHTML = html || 'No votes yet.';
+        }catch(e){ console.error(e); alert('Could not load voters'); }
+      };
+    }
+
     function renderList(snap){
-      grid.innerHTML='';
       const items=[]; snap.forEach(d=>{
         const raw=d.data();
         items.push({ id:d.id,
           name: raw?.name ?? raw?.Name ?? 'Untitled',
           url: raw?.url ?? raw?.URL ?? '',
           count: raw?.count ?? raw?.Count ?? 0,
+          featured: !!(raw?.featured),
           createdAt: raw?.createdAt ?? raw?.Createdat ?? null
         });
       });
-      const max = Math.max(...items.map(x=>x.count||0), 1);
-      topStats.innerHTML = items.map(it=>{
-        const pct = Math.round(((it.count||0)/max)*100);
-        return `<div class="bar"><div>🎬 ${it.name}</div><div class="track"><div class="fill" style="width:${pct}%"></div></div><div class="count">${it.count||0}</div></div>`;
-      }).join('');
 
-      items.forEach(it=> grid.insertAdjacentHTML('beforeend', reelCard(it)));
-      if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
+      const visible = isAdmin ? items : items.filter(x=>x.featured);
+      if(visible.length===0){
+        topStats.innerHTML='';
+        grid.innerHTML = '<div class="subtle">No items are selected right now. Check back later.</div>';
+      } else {
+        renderTopBars(visible);
+        grid.innerHTML='';
+        visible.forEach((it,i)=> grid.insertAdjacentHTML('beforeend', reelCard(it,i)));
+        if(window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
 
-      grid.querySelectorAll('button[data-act="open"]').forEach(b=> b.onclick = ()=> window.open(b.getAttribute('data-url'),'_blank'));
-      grid.querySelectorAll('button[data-act="vote"]').forEach(b=>{
-        b.onclick = function(){
-          if(!db) return alert('Add Firebase config first.');
-          const id = b.getAttribute('data-id');
-          const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
-          if(!name) return alert('Please enter your name.');
-          const device = getDeviceId();
-          const voterKey = device; // one vote per reel per device (name only stored)
-          votesCol(id).where('voterKey','==',voterKey).limit(1).get().then(q=>{
-            if(!q.empty) return alert('You already voted for this one from this device/name.');
-            return votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()})
-              .then(()=> reelsCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)}))
-              .catch(e=>{ console.error(e); alert('Vote failed.'); });
-          });
-        }
-      });
+        grid.querySelectorAll('button[data-act="open"]').forEach(b=> b.onclick = ()=> window.open(b.getAttribute('data-url'),'_blank'));
+        grid.querySelectorAll('button[data-act="vote"]').forEach(b=>{
+          b.onclick = function(){
+            if(!db) return alert('Add Firebase config first.');
+            const id = b.getAttribute('data-id');
+            const gname = decodeURIComponent(b.getAttribute('data-name'));
+            const name = (document.getElementById('name_'+id).value||'Anonymous').trim();
+            if(!name) return alert('Please enter your name.');
+            const device = getDeviceId();
+            const voterKey = device; // one vote per reel per device
+            votesCol(id).where('voterKey','==',voterKey).limit(1).get().then(q=>{
+              if(!q.empty) return alert('You already voted for this one from this device. You can vote others.');
+              return votesCol(id).add({voterName:name, voterKey, ts: firebase.firestore.FieldValue.serverTimestamp()})
+                .then(()=> votersLog().add({voterName:name, gameId:id, gameName:gname, device, ts: firebase.firestore.FieldValue.serverTimestamp()}))
+                .then(()=> gamesCol().doc(id).update({count: firebase.firestore.FieldValue.increment(1)}))
+                .catch(e=>{ console.error(e); alert('Vote failed.'); });
+            });
+          }
+        });
+      }
+      renderAdmin(items);
     }
 
     function subscribe(){
       if(!db){
-        const demo = DEFAULTS.map((d,i)=>({id:String(i+1), name:d.name, url:d.url, count: Math.floor(Math.random()*10)}));
-        const fake = { forEach: cb => demo.forEach(x=>cb({id:x.id, data:()=>x})) };
-        renderList(fake);
+        grid.innerHTML = '<div class="subtle">Connect Firebase to load items.</div>';
         return;
       }
-      reelsCol().onSnapshot(renderList, err=>console.error('Snapshot error', err));
+      gamesCol().onSnapshot(renderList, err=>console.error('Snapshot error', err));
     }
 
     // confetti
     (function(){ const orbit=document.getElementById('orbit'); const colors=['#7cf7ff','#95ff87','#ffd166','#ff7eb6','#c4b5fd']; for(let i=0;i<40;i++){ const d=document.createElement('div'); d.className='orb'; d.style.left=Math.random()*100+'vw'; d.style.top=(-10-Math.random()*40)+'vh'; d.style.background=colors[Math.floor(Math.random()*colors.length)]; const dx=(Math.random()*60-30)+'vw'; d.style.setProperty('--dx',dx); d.style.animationDuration=(6+Math.random()*10)+'s'; orbit.appendChild(d);} })();
 
-    // start
-    seedIfMissing().then(subscribe);
+    subscribe();
   })();
   </script>
 </body>
