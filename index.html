@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&family=Fugaz+One&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{ --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; --bar1:#7cf7ff; --bar2:#95ff87; --bar3:#ffd166; --bar4:#ff7eb6; }
+    :root{ --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{ margin:0; font-family:Rubik,system-ui,Segoe UI,Roboto,Helvetica,Arial; color:var(--ink);
@@ -79,6 +79,12 @@
 
     <p class="subtle">Vote for your favorite reels/shorts. You can vote for <b>multiple different items</b>, but only once per item from your device + name.</p>
     <div class="grid" id="reelsGrid"></div>
+
+    <div id="liveFeed" class="card" style="margin:10px 0; padding:12px;">
+      <div style="font-weight:800; margin-bottom:6px">📣 Live votes (latest 10)</div>
+      <div id="feedBody" class="subtle">No votes yet.</div>
+    </div>
+
     <p class="footer">Built for employee engagement & fun ✌️ – Team VIBE</p>
   </div>
 
@@ -114,6 +120,42 @@
     const votesCol = (id) => db && gamesCol().doc(id).collection('votes');
     const votersLog = () => db && db.collection('voters_log'); // optional, for names table
 
+    // ===== Provided 30-game list (admin can import) =====
+    const GAMES_MASTER = [
+      { name: "Drop the Pen in bottle using Mobile camera", url: "https://www.instagram.com/reel/DNP0ZztvnvZ/?igsh=M3h2M3Z5eGE2amlw" },
+      { name: "Fan the Cup", url: "https://www.instagram.com/reel/DMvARSAz6qY/?igsh=MTh2cXp2M2hndW1rbA%3D%3D" },
+      { name: "Strick standing Challenge", url: "https://www.instagram.com/reel/DNQEm21vdpB/?igsh=c2d2bTZyc255aTc=" },
+      { name: "Hanger Transfer", url: "https://www.instagram.com/reel/DOBPgExCLgo/?igsh=MTJpazR0aHBjcjdibw==" },
+      { name: "Multiple games in this Reel", url: "https://www.instagram.com/reel/DOGK-8KEskO/?igsh=MWl6cTg5cXhldmRibA==" },
+      { name: "Do the Opposites", url: "https://www.instagram.com/reel/DOycseHE_NS/?igsh=eTI4ZTJ4YnRjYzM4" },
+      { name: "Mission Bottle escape", url: "https://www.instagram.com/reel/DMfKLvcvbwF/?igsh=MXI0bDRicTV1ZmdlcA==" },
+      { name: "Ball Gate", url: "https://www.instagram.com/reel/DLZLzUpy9JE/?igsh=MXg5dnYwaDk4ZDd0aQ==" },
+      { name: "Catch it if you can", url: "https://www.instagram.com/reel/DMaaKp2TY1I/?igsh=MTk3MDYzNzA2cDI0bQ==" },
+      { name: "Whats hiding in the cup?", url: "https://www.instagram.com/reel/DLZ39itSv5I/?igsh=MWkweXdpb2w2djFsNA==" },
+      { name: "Spin and Drop the ball with bottle", url: "https://www.instagram.com/reel/DNFGKpSSJX1/?igsh=MTh0OXQ5OTd3bHUxMQ==" },
+      { name: "Don't Clap At the Same Time", url: "https://www.instagram.com/reel/DK14cTbpnXc/?igsh=MWluNmtwYTU3ZHl0cA==" },
+      { name: "Don't follow the hand", url: "https://www.instagram.com/reel/DLm-ckQSnaZ/?igsh=aTQxbW80cXo5eHF6" },
+      { name: "Fill the cup with chocolate with papercup in both hand", url: "https://www.instagram.com/reel/DNlQfNvSZuO/?igsh=bHBxdzg3Nng1ZnNr" },
+      { name: "Collect the cup with straw", url: "https://www.instagram.com/reel/DNqUyH0o_On/?igsh=MXFhNnF5ZGozdmo1NA==" },
+      { name: "Flip the bottle", url: "https://youtube.com/shorts/JHU9ac717Tw?si=iho1cq6aS14VMxFz" },
+      { name: "Blow the Cup with balloon", url: "https://www.instagram.com/reel/DNQYH_YSrvx/?igsh=MXRjYWlybHc5ZmV5bA==" },
+      { name: "Tower Cup Challenge", url: "https://www.instagram.com/reel/DLZp5RYv7aY/?igsh=NTV6Z2hzcXBwNDF0" },
+      { name: "Communication challenge", url: "https://youtube.com/shorts/RO0uJrbk1kc?si=c24-sWUk3MrDTOl2" },
+      { name: "Don't Drop the Balloon", url: "https://youtube.com/shorts/N_xj-Zc762U?si=oJLotePSpF1qAzhC" },
+      { name: "Head, Shoulder,Knees and pick the  item", url: "https://youtube.com/shorts/m_QEcL7dK7I?si=_6uZ3ArVQhS7lCj3" },
+      { name: "Build the tower with Marshmallow", url: "https://youtu.be/7ZMuHZv47bQ?si=VMx2ypYdEXjBgfz9" },
+      { name: "Goal the Ball", url: "https://youtube.com/shorts/bQYxwodUM2c?si=WlULSCE0Sh4vSUE-" },
+      { name: "Hold the Paper with Straw", url: "https://youtube.com/shorts/mJgk6DLG7t0?si=fPG24w4lrdbg1nnG" },
+      { name: "Build the pyramid with cup in head", url: "https://youtu.be/e-qehXWt36Y?si=QNK8HizfkpOFXmCE" },
+      { name: "Cup and straw Balance", url: "https://youtube.com/shorts/PSDLwatlT2Q?si=jCuzv0y18d1uB3a6" },
+      { name: "Hold the ball with Pen", url: "https://www.instagram.com/reel/DIog4Lnh-JV/?igsh=MWRiMGZkd2V1NWU3OQ==" },
+      { name: "Spin and jump into your paper", url: "https://www.instagram.com/reel/DKPfi9ChQkg/?igsh=MTF2dWFwZ3NiMmMzMA==" },
+      { name: "Transfer the ball with A4 paper", url: "https://www.instagram.com/reel/DMhVD5wRqa7/?igsh=emxtN2MzdzJ4ZDk4" },
+      { name: "Catch the ball", url: "https://youtube.com/shorts/2cWj0XGiwGY?si=6J2kxLH1UWkUTM1y" }
+    ];
+
+    const palette = [ ['#7cf7ff','#95ff87'], ['#ffd166','#7cf7ff'], ['#ff7eb6','#ffd166'], ['#95ff87','#c4b5fd'] ];
+
     // ===== Helpers =====
     const grid = document.getElementById('reelsGrid');
     const topStats = document.getElementById('topStats');
@@ -129,8 +171,6 @@
         return {type:'unknown', open:url.toString()};
       }catch(e){ return {type:'invalid'} }
     }
-
-    const palette = [ ['#7cf7ff','#95ff87'], ['#ffd166','#7cf7ff'], ['#ff7eb6','#ffd166'], ['#95ff87','#c4b5fd'] ];
 
     function reelCard(it, idx){
       const meta = parseUrl(it.url||'');
@@ -171,14 +211,14 @@
     function renderAdmin(items){
       if(!isAdmin){ adminPanel.style.display='none'; return; }
       adminPanel.style.display='block';
-      const featuredCount = items.filter(x=>x.featured).length;
       adminPanel.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
-          <div><b>Admin</b> – Select exactly <b>4 featured</b> games for users. Currently: <b>${featuredCount}</b></div>
+          <div><b>Admin</b> – Toggle <b>Featured</b> on any number of games. Users only see featured ones.</div>
           <div style="display:flex; gap:8px; flex-wrap:wrap">
             <button class="btn" id="saveFeatured">Save Featured</button>
-            <button class="btn warn" id="resetVotes">Reset votes for featured</button>
+            <button class="btn warn" id="resetVotes">Reset votes (featured)</button>
             <button class="btn ghost" id="viewVoters">View recent voters</button>
+            <button class="btn ghost" id="importGames">Import games (add missing)</button>
           </div>
         </div>
         <div class="admGrid" style="margin-top:10px">${items.map(it=>`
@@ -191,33 +231,34 @@
           </div>`).join('')}</div>
         <div id="votersBox" class="subtle" style="margin-top:10px"></div>
       `;
-      // Save featured
+      // Save featured (any number allowed)
       document.getElementById('saveFeatured').onclick = async ()=>{
         const chks = [...adminPanel.querySelectorAll('.featChk')];
         const selected = chks.filter(c=>c.checked).map(c=>c.getAttribute('data-id'));
-        if(selected.length!==4){ alert('Please select exactly 4 items.'); return; }
         try{
           const batch = db.batch();
           items.forEach(it=>{ batch.update(gamesCol().doc(it.id), {featured: selected.includes(it.id)}); });
           await batch.commit();
-          alert('Featured set saved. Users will now see the selected 4.');
+          alert('Featured saved.');
         }catch(e){ console.error(e); alert('Saving failed.'); }
       };
-      // Reset votes for featured
+      // Reset votes for featured (robust batching)
       document.getElementById('resetVotes').onclick = async ()=>{
-        if(!confirm('This will set counts to 0 and delete vote logs for the 4 featured items. Continue?')) return;
+        if(!confirm('Set counts to 0 and delete vote logs for ALL featured items?')) return;
         try{
           for(const it of items.filter(x=>x.featured)){
-            // delete votes subcollection
-            const vs = await votesCol(it.id).get();
-            const batchDel = db.batch();
-            vs.forEach(doc=> batchDel.delete(votesCol(it.id).doc(doc.id)) );
-            await batchDel.commit();
-            // reset count
+            // delete votes in chunks
+            let snap = await votesCol(it.id).limit(400).get();
+            while(!snap.empty){
+              const batch = db.batch();
+              snap.forEach(doc=> batch.delete(votesCol(it.id).doc(doc.id)));
+              await batch.commit();
+              snap = await votesCol(it.id).limit(400).get();
+            }
             await gamesCol().doc(it.id).update({count:0});
           }
-          alert('Votes reset.');
-        }catch(e){ console.error(e); alert('Reset failed. Check Firestore rules allow update & delete on /votes subcollection.'); }
+          alert('Votes reset complete.');
+        }catch(e){ console.error(e); alert('Reset failed. Ensure Firestore rules allow delete on /votes/* and update on games.'); }
       };
       // View voters (recent 50 for featured)
       document.getElementById('viewVoters').onclick = async ()=>{
@@ -232,6 +273,17 @@
           const html = '<div><b>Recent voters</b></div>' + list.map(v=>`<div>• ${v.voterName||'Anonymous'} <span class="subtle">(${v.game})</span></div>`).join('');
           document.getElementById('votersBox').innerHTML = html || 'No votes yet.';
         }catch(e){ console.error(e); alert('Could not load voters'); }
+      };
+      // Import games (adds only missing by name)
+      document.getElementById('importGames').onclick = async ()=>{
+        if(!confirm('Add any missing items from the 30-game list?')) return;
+        try{
+          for(const g of GAMES_MASTER){
+            const q = await gamesCol().where('name','==', g.name).limit(1).get();
+            if(q.empty){ await gamesCol().add({name:g.name, url:g.url, count:0, featured:false, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); }
+          }
+          alert('Import complete. Refresh to see new items.');
+        }catch(e){ console.error(e); alert('Import failed. Ensure rules allow create temporarily.'); }
       };
     }
 
@@ -252,6 +304,8 @@
         topStats.innerHTML='';
         grid.innerHTML = '<div class="subtle">No items are selected right now. Check back later.</div>';
       } else {
+        // sort by count desc
+        visible.sort((a,b)=> (b.count||0) - (a.count||0));
         renderTopBars(visible);
         grid.innerHTML='';
         visible.forEach((it,i)=> grid.insertAdjacentHTML('beforeend', reelCard(it,i)));
@@ -285,7 +339,21 @@
         grid.innerHTML = '<div class="subtle">Connect Firebase to load items.</div>';
         return;
       }
+      // games list
       gamesCol().onSnapshot(renderList, err=>console.error('Snapshot error', err));
+      // live feed of last 10 votes (from voters_log)
+      votesLive();
+    }
+
+    function votesLive(){
+      const feedBody = document.getElementById('feedBody');
+      try{
+        votersLog().orderBy('ts','desc').limit(10).onSnapshot(snap=>{
+          const arr=[]; snap.forEach(d=> arr.push(d.data()));
+          if(arr.length===0){ feedBody.textContent='No votes yet.'; return; }
+          feedBody.innerHTML = arr.map(v=>`<div>• <b>${v.voterName||'Anonymous'}</b> voted <i>${v.gameName||v.gameId}</i></div>`).join('');
+        }, err=>{ console.warn('voters_log read failed', err); });
+      }catch(e){ console.warn('Live feed not available', e); }
     }
 
     // confetti
