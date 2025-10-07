@@ -12,10 +12,12 @@
     :root{ --bg:#0b1020; --card:#121733; --ink:#e7ecff; --muted:#9aa3c7; }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{ margin:0; font-family:Rubik,system-ui,Segoe UI,Roboto,Helvetica,Arial; color:var(--ink);
+    body{
+      margin:0; font-family:Rubik,system-ui,Segoe UI,Roboto,Helvetica,Arial; color:var(--ink);
       background:radial-gradient(1200px 800px at 10% -10%, #1a2050, transparent 50%),
                  radial-gradient(1200px 800px at 110% 10%, #35206a, transparent 50%),
-                 linear-gradient(180deg,#0b1020,#0b1020 60%, #0f1630); }
+                 linear-gradient(180deg,#0b1020,#0b1020 60%, #0f1630);
+    }
     header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg, rgba(15,22,48,.85), rgba(15,22,48,.35)); border-bottom:1px solid rgba(255,255,255,.08); -webkit-backdrop-filter:saturate(1.2) blur(6px); backdrop-filter:saturate(1.2) blur(6px)}
     .wrap{max-width:1200px; margin:0 auto; padding:16px}
     .brand{display:flex; align-items:center; gap:16px; justify-content:space-between; flex-wrap:wrap}
@@ -23,26 +25,28 @@
     @keyframes hue{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
     @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-    /* Top stats */
+    /* Highlight meters in name rows (vote progress) */
     .stats{display:grid; gap:10px; grid-template-columns:1fr; margin-top:6px}
-    .bar{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center}
-    .bar .name{display:flex; align-items:center; gap:10px; font-family:Teko, Rubik, system-ui; letter-spacing:.4px; font-size:22px}
-    .bar .badge{width:14px; height:14px; border-radius:4px; opacity:.9}
-    .track{height:14px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:999px; overflow:hidden}
-    .fill{height:100%; width:0%; background:linear-gradient(90deg, var(--c1), var(--c2)); box-shadow:0 0 20px rgba(255,255,255,.15) inset; transition: width .7s cubic-bezier(.22,.61,.36,1);
-      position:relative}
-    .fill::after{content:""; position:absolute; inset:0; background:linear-gradient(120deg, rgba(255,255,255,.25), rgba(255,255,255,0) 60%); transform:skewX(-20deg) translateX(-100%); animation: shimmer 2.2s infinite}
-    @keyframes shimmer{to{transform:skewX(-20deg) translateX(120%)}}
-    .count{font-weight:800}
+    .hlRow{display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px}
+    .nameHL{
+      position:relative; display:inline-block; padding:2px 12px;
+      border-radius:999px; font-family:Teko, Rubik; font-size:22px; letter-spacing:.2px;
+    }
+    .nameHL::before{
+      content:""; position:absolute; inset:0; border-radius:inherit;
+      background: linear-gradient(90deg, var(--c1), transparent 70%);
+      opacity:.35; transform-origin:left; transform: scaleX(var(--p,0));
+      transition: transform .7s cubic-bezier(.22,.61,.36,1);
+    }
+    .hlRow .count{font-weight:800}
 
-    /* Grid of reels */
+    /* Cards grid */
     .grid{display:grid; gap:16px; grid-template-columns:repeat(3, 1fr)}
     @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:700px){.grid{grid-template-columns:1fr}}
 
     .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:14px; box-shadow:0 20px 60px rgba(0,0,0,.25)}
     .card h3{margin:2px 0 10px; font-size:22px; font-family:Teko, Rubik}
-    .nameColor1{color:#8be9ff}.nameColor2{color:#95ff87}.nameColor3{color:#ffd166}.nameColor4{color:#ff7eb6}
     .reel{position:relative; width:100%; aspect-ratio:9/16; border-radius:14px; overflow:hidden; background:#0a0f24; border:1px solid rgba(255,255,255,.1)}
     .reel iframe, .reel blockquote{position:absolute; inset:0; width:100%; height:100%}
     .row{display:flex; gap:8px; margin-top:10px; align-items:center}
@@ -55,15 +59,33 @@
     .subtle{color:var(--muted); font-size:13px}
     .footer{margin:20px 0 60px; text-align:center; color:var(--muted); font-size:12px}
 
-    .orbit{position:fixed; pointer-events:none; inset:0; overflow:hidden}
-    .orb{position:absolute; width:10px; height:10px; border-radius:2px; opacity:.7; animation: drift linear infinite}
-    @keyframes drift{to{transform:translate3d(var(--dx), 100vh, 0) rotate(720deg)}}
+    /* Inline live feed in header */
+    .live-inline{
+      width:100%; margin-top:6px; border:1px solid rgba(255,255,255,.08);
+      border-radius:12px; padding:8px 10px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    }
+    .live-title{font-weight:800; font-size:13px; color:#9aa3c7; margin-bottom:4px}
+    .live-body{font-size:13px; line-height:1.35}
+    .live-body .item{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+    /* User search */
+    .user-search{margin:8px 0 12px; display:flex; gap:8px}
+    .user-search input{
+      flex:1; padding:10px 12px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff;
+    }
 
     /* Admin panel */
     .admin{margin:12px 0 20px; padding:12px; border-radius:16px; border:1px dashed rgba(255,255,255,.2); background:rgba(255,255,255,.04)}
     .admGrid{display:grid; gap:8px; grid-template-columns:repeat(2,1fr)}
     @media(max-width:900px){.admGrid{grid-template-columns:1fr}}
     .admRow{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.04)}
+
+    /* confetti */
+    .orbit{position:fixed; pointer-events:none; inset:0; overflow:hidden}
+    .orb{position:absolute; width:10px; height:10px; border-radius:2px; opacity:.7; animation: drift linear infinite}
+    @keyframes drift{to{transform:translate3d(var(--dx), 100vh, 0) rotate(720deg)}}
   </style>
 </head>
 <body>
@@ -71,19 +93,25 @@
     <div class="wrap brand">
       <div class="title">Team VIBE</div>
       <div class="stats" id="topStats"></div>
+
+      <!-- Live votes inline at top -->
+      <div id="liveFeedInline" class="live-inline">
+        <div class="live-title">📣 Live votes</div>
+        <div id="feedBodyInline" class="live-body">No votes yet.</div>
+      </div>
     </div>
   </header>
 
   <div class="wrap" style="margin-top:10px">
     <div id="adminPanel" class="admin" style="display:none"></div>
 
+    <!-- User search -->
+    <div class="user-search">
+      <input id="userSearch" placeholder="Search games..." />
+    </div>
+
     <p class="subtle">Vote for your favorite reels/shorts. You can vote for <b>multiple different items</b>, but only once per item from your device + name.</p>
     <div class="grid" id="reelsGrid"></div>
-
-    <div id="liveFeed" class="card" style="margin:10px 0; padding:12px;">
-      <div style="font-weight:800; margin-bottom:6px">📣 Live votes (latest 10)</div>
-      <div id="feedBody" class="subtle">No votes yet.</div>
-    </div>
 
     <p class="footer">Built for employee engagement & fun ✌️ – Team VIBE</p>
   </div>
@@ -97,14 +125,15 @@
 
   <script>
   (function(){ 'use strict';
+
     // ===== Admin code (change this to your secret) =====
     const ADMIN_CODE = 'VIBE-SECRET-1234';
     const qp = new URLSearchParams(location.search);
     let isAdmin = qp.get('admin')==='1' && (localStorage.getItem('tv_admin_ok')==='1' || prompt('Enter admin code')===ADMIN_CODE);
     if(isAdmin) localStorage.setItem('tv_admin_ok','1');
 
-    // ===== Firebase init =====
-    const firebaseConfig = { 
+    // ===== Firebase init (your project) =====
+    const firebaseConfig = {
       apiKey: "AIzaSyAmmehhmU_ZKZ-rdnQ1e6PULO2bd1fYisg",
       authDomain: "team-vibe-1c3ea.firebaseapp.com",
       projectId: "team-vibe-1c3ea",
@@ -118,9 +147,9 @@
     // ===== Firestore refs =====
     const gamesCol = () => db && db.collection('TeamVibe_games'); // case-sensitive
     const votesCol = (id) => db && gamesCol().doc(id).collection('votes');
-    const votersLog = () => db && db.collection('voters_log'); // optional, for names table
+    const votersLog = () => db && db.collection('voters_log');
 
-    // ===== Provided 30-game list (admin can import) =====
+    // ===== Provided 30-game master list (for Import button) =====
     const GAMES_MASTER = [
       { name: "Drop the Pen in bottle using Mobile camera", url: "https://www.instagram.com/reel/DNP0ZztvnvZ/?igsh=M3h2M3Z5eGE2amlw" },
       { name: "Fan the Cup", url: "https://www.instagram.com/reel/DMvARSAz6qY/?igsh=MTh2cXp2M2hndW1rbA%3D%3D" },
@@ -160,14 +189,34 @@
     const grid = document.getElementById('reelsGrid');
     const topStats = document.getElementById('topStats');
     const adminPanel = document.getElementById('adminPanel');
+
     const DID_KEY='teamvibe_device_id';
     function getDeviceId(){ let id = localStorage.getItem(DID_KEY); if(!id){ id = Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem(DID_KEY,id);} return id; }
 
+    // Robust URL parser (supports YouTube shorts/watch/youtu.be + Instagram)
     function parseUrl(u){
-      try{ const url=new URL(u); const host=url.hostname.replace('www.','');
-        if(host.includes('youtube.com')){ const v=url.searchParams.get('v'); if(v) return {type:'yt', id:v, open:url.toString()}; }
-        if(host==='youtu.be'){ const id=url.pathname.slice(1); if(id) return {type:'yt', id, open:url.toString()}; }
-        if(host.includes('instagram.com')){ return {type:'ig', open:url.toString(), embed:url.toString()}; }
+      try{
+        const url = new URL(u);
+        const host = url.hostname.replace('www.','');
+
+        // YouTube
+        if (host.includes('youtube.com') || host === 'youtu.be') {
+          if (host === 'youtu.be') {
+            const id = url.pathname.slice(1);
+            if (id) return {type:'yt', id, open:url.toString()};
+          }
+          const v = url.searchParams.get('v');
+          if (v) return {type:'yt', id:v, open:url.toString()};
+          const shorts = url.pathname.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
+          if (shorts && shorts[1]) return {type:'yt', id:shorts[1], open:url.toString()};
+          return {type:'unknown', open:url.toString()};
+        }
+
+        // Instagram
+        if (host.includes('instagram.com')) {
+          return {type:'ig', open:url.toString(), embed:url.toString()};
+        }
+
         return {type:'unknown', open:url.toString()};
       }catch(e){ return {type:'invalid'} }
     }
@@ -179,10 +228,9 @@
         : (meta.type==='ig')
           ? `<blockquote class="instagram-media" data-instgrm-permalink="${it.url}" style="margin:0; height:100%; overflow:auto; background:#0a0f24;"></blockquote>`
           : `<div class="subtle" style="padding:8px">Unsupported link</div>`;
-      const nameClr = 'nameColor'+((idx%4)+1);
       return `
         <article class="card" id="card_${it.id}">
-          <h3 class="${nameClr}">${it.name}</h3>
+          <h3>${it.name}</h3>
           <div class="reel">${embed}</div>
           <div class="row">
             <input placeholder="Your name" id="name_${it.id}" />
@@ -192,18 +240,15 @@
         </article>`;
     }
 
+    // Name-highlight style progress
     function renderTopBars(items){
       const max = Math.max(...items.map(x=>x.count||0), 1);
       topStats.innerHTML = items.map((it,i)=>{
-        const pct = Math.round(((it.count||0)/max)*100);
+        const pct = (it.count||0) / max;
         const c1 = palette[i%palette.length][0];
-        const c2 = palette[i%palette.length][1];
-        return `<div class="bar" style="--c1:${c1}; --c2:${c2}">
-          <div class="name"><span class="badge" style="background:${c1}"></span>${it.name}</div>
-          <div style="display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center">
-            <div class="track"><div class="fill" style="background:linear-gradient(90deg, ${c1}, ${c2}); width:${pct}%"></div></div>
-            <div class="count">${it.count||0}</div>
-          </div>
+        return `<div class="hlRow">
+          <span class="nameHL" style="--p:${pct}; --c1:${c1}">${it.name}</span>
+          <span class="count">${it.count||0}</span>
         </div>`;
       }).join('');
     }
@@ -215,26 +260,43 @@
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
           <div><b>Admin</b> – Toggle <b>Featured</b> on any number of games. Users only see featured ones.</div>
           <div style="display:flex; gap:8px; flex-wrap:wrap">
-            <input id=\"newName\" placeholder=\"Game name\" style=\"padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff; min-width:220px\" />
-            <input id=\"newUrl\" placeholder=\"Game URL (IG/YouTube)\" style=\"padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff; min-width:320px\" />
-            <button class=\"btn\" id=\"addGameBtn\">Add game</button>
-            <button class=\"btn\" id=\"saveFeatured\">Save Featured</button>
-            <button class=\"btn warn\" id=\"resetVotes\">Reset votes (featured)</button>
-            <button class=\"btn ghost\" id=\"viewVoters\">View recent voters</button>
-            <button class=\"btn ghost\" id=\"importGames\">Import games (add missing)</button>
+            <input id="newName" placeholder="Game name" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff; min-width:220px" />
+            <input id="newUrl" placeholder="Game URL (IG/YouTube)" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:#0d1330; color:#e7ecff; min-width:320px" />
+            <button class="btn" id="addGameBtn">Add game</button>
+            <button class="btn" id="saveFeatured">Save Featured</button>
+            <button class="btn warn" id="resetVotes">Reset votes (featured)</button>
+            <button class="btn ghost" id="viewVoters">View recent voters</button>
+            <button class="btn ghost" id="importGames">Import games (add missing)</button>
           </div>
         </div>
-        <div class=\"admGrid\" style=\"margin-top:10px\">${items.map(it=>`
-          <div class=\"admRow\">
-            <div style=\"display:flex; align-items:center; gap:10px\">
-              <input type=\"checkbox\" class=\"featChk\" data-id=\"${it.id}\" ${it.featured?'checked':''} />
+        <div class="admGrid" style="margin-top:10px">${items.map(it=>`
+          <div class="admRow">
+            <div style="display:flex; align-items:center; gap:10px">
+              <input type="checkbox" class="featChk" data-id="${it.id}" ${it.featured?'checked':''} />
               <span>${it.name}</span>
             </div>
-            <span class=\"subtle\">${it.count||0} votes</span>
+            <span class="subtle">${it.count||0} votes</span>
           </div>`).join('')}</div>
-        <div id=\"votersBox\" class=\"subtle\" style=\"margin-top:10px\"></div>
+        <div id="votersBox" class="subtle" style="margin-top:10px"></div>
       `;
-      // Add single game (admin quick add)
+
+      // Admin search box
+      if(!document.getElementById('adminSearch')){
+        const s = document.createElement('input');
+        s.id = 'adminSearch';
+        s.placeholder = 'Search admin list...';
+        s.style.cssText = 'margin-top:8px;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0d1330;color:#e7ecff;width:100%';
+        adminPanel.prepend(s);
+        s.oninput = () => {
+          const val = s.value.toLowerCase();
+          adminPanel.querySelectorAll('.admRow').forEach(row=>{
+            const name = row.querySelector('span').textContent.toLowerCase();
+            row.style.display = name.includes(val) ? '' : 'none';
+          });
+        };
+      }
+
+      // Add game
       document.getElementById('addGameBtn').onclick = async ()=>{
         const name = (document.getElementById('newName').value||'').trim();
         const url  = (document.getElementById('newUrl').value||'').trim();
@@ -248,7 +310,8 @@
           alert('Game added.');
         }catch(e){ console.error(e); alert('Add failed. Check Firestore rules allow create.'); }
       };
-      // Save featured (any number allowed)
+
+      // Save featured
       document.getElementById('saveFeatured').onclick = async ()=>{
         const chks = [...adminPanel.querySelectorAll('.featChk')];
         const selected = chks.filter(c=>c.checked).map(c=>c.getAttribute('data-id'));
@@ -259,7 +322,8 @@
           alert('Featured saved.');
         }catch(e){ console.error(e); alert('Saving failed.'); }
       };
-      // Reset votes for featured (robust batching)
+
+      // Reset votes (featured)
       document.getElementById('resetVotes').onclick = async ()=>{
         if(!confirm('Set counts to 0 and delete vote logs for ALL featured items?')) return;
         try{
@@ -274,9 +338,10 @@
             await gamesCol().doc(it.id).update({count:0});
           }
           alert('Votes reset complete.');
-        }catch(e){ console.error(e); alert('Reset failed. Ensure Firestore rules allow delete on /votes/* and update on games.'); }
+        }catch(e){ console.error(e); alert('Reset failed. Ensure rules allow delete on /votes/* and update on games.'); }
       };
-      // View voters (recent 50 for featured)
+
+      // View recent voters (for featured)
       document.getElementById('viewVoters').onclick = async ()=>{
         try{
           const ids = items.filter(x=>x.featured).map(x=>x.id);
@@ -286,11 +351,12 @@
             snap.forEach(d=> list.push({game: items.find(x=>x.id===id)?.name || id, ...d.data()}));
           }
           list.sort((a,b)=> (b.ts?.seconds||0)-(a.ts?.seconds||0));
-          const html = '<div><b>Recent voters</b></div>' + list.map(v=>`<div>• ${v.voterName||'Anonymous'} <span class=\"subtle\">(${v.game})</span></div>`).join('');
+          const html = '<div><b>Recent voters</b></div>' + list.map(v=>`<div>• ${v.voterName||'Anonymous'} <span class="subtle">(${v.game})</span></div>`).join('');
           document.getElementById('votersBox').innerHTML = html || 'No votes yet.';
         }catch(e){ console.error(e); alert('Could not load voters'); }
       };
-      // Import games (adds only missing by name)
+
+      // Import master list (adds only missing by name)
       document.getElementById('importGames').onclick = async ()=>{
         if(!confirm('Add any missing items from the 30-game list?')) return;
         try{
@@ -306,7 +372,8 @@
     function renderList(snap){
       const items=[]; snap.forEach(d=>{
         const raw=d.data();
-        items.push({ id:d.id,
+        items.push({
+          id:d.id,
           name: raw?.name ?? raw?.Name ?? 'Untitled',
           url: raw?.url ?? raw?.URL ?? '',
           count: raw?.count ?? raw?.Count ?? 0,
@@ -320,7 +387,7 @@
         topStats.innerHTML='';
         grid.innerHTML = '<div class="subtle">No items are selected right now. Check back later.</div>';
       } else {
-        // sort by count desc
+        // Sort by votes (desc)
         visible.sort((a,b)=> (b.count||0) - (a.count||0));
         renderTopBars(visible);
         grid.innerHTML='';
@@ -347,6 +414,7 @@
           }
         });
       }
+
       renderAdmin(items);
     }
 
@@ -355,19 +423,33 @@
         grid.innerHTML = '<div class="subtle">Connect Firebase to load items.</div>';
         return;
       }
-      // games list
+      // list + counts
       gamesCol().onSnapshot(renderList, err=>console.error('Snapshot error', err));
-      // live feed of last 10 votes (from voters_log)
+      // live feed
       votesLive();
+
+      // user search filter
+      const userSearchInput = document.getElementById('userSearch');
+      if (userSearchInput) {
+        userSearchInput.addEventListener('input', () => {
+          const q = userSearchInput.value.trim().toLowerCase();
+          document.querySelectorAll('#reelsGrid .card').forEach(card=>{
+            const h3 = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+            card.style.display = h3.includes(q) ? '' : 'none';
+          });
+        });
+      }
     }
 
     function votesLive(){
-      const feedBody = document.getElementById('feedBody');
+      const feedBody = document.getElementById('feedBodyInline');
       try{
         votersLog().orderBy('ts','desc').limit(10).onSnapshot(snap=>{
           const arr=[]; snap.forEach(d=> arr.push(d.data()));
           if(arr.length===0){ feedBody.textContent='No votes yet.'; return; }
-          feedBody.innerHTML = arr.map(v=>`<div>• <b>${v.voterName||'Anonymous'}</b> voted <i>${v.gameName||v.gameId}</i></div>`).join('');
+          feedBody.innerHTML = arr.map(v =>
+            `<div class="item">• <b>${v.voterName||'Anonymous'}</b> voted <i>${v.gameName||v.gameId}</i></div>`
+          ).join('');
         }, err=>{ console.warn('voters_log read failed', err); });
       }catch(e){ console.warn('Live feed not available', e); }
     }
