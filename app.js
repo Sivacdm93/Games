@@ -1,4 +1,4 @@
-/* Team VIBE – front-end logic (full file) */
+/* Team VIBE – front-end logic (full file, fixed) */
 (function () {
   'use strict';
 
@@ -95,7 +95,7 @@
   // =========================
   // UI builders
   // =========================
-  function reelCard(it, idx) {
+  function reelCard(it) {
     const meta = parseUrl(it.url || '');
     const embed =
       meta.type === 'yt'
@@ -135,27 +135,19 @@
 
   // =========================
   // Reset helper functions
-  // (defined OUTSIDE renderAdmin so handlers can call them)
   // =========================
 
- // Reset Selected (only clears featured flag, no votes)
-document.getElementById('resetSelected').onclick = async ()=>{
-  const chks = [...adminPanel.querySelectorAll('.featChk')];
-  const ids  = chks.filter(c=>c.checked).map(c=>c.getAttribute('data-id'));
-  if(ids.length===0) return alert('Select at least one item.');
-  if(!confirm('Remove these games from selection?')) return;
-
-  try {
-    const batch = db.batch();
-    ids.forEach(id => batch.update(gamesCol().doc(id), {featured:false}));
-    await batch.commit();
-    alert('Selected games removed from user view.');
-  } catch(e) {
-    console.error(e);
-    alert('Reset Selected failed.');
-  }
-};
-
+  // Reset votes + live log for a set of game IDs
+  async function clearVotesForGames(ids) {
+    for (const id of ids) {
+      // delete votes subcollection
+      let snap = await votesCol(id).limit(400).get();
+      while (!snap.empty) {
+        const batch = db.batch();
+        snap.forEach(doc => batch.delete(votesCol(id).doc(doc.id)));
+        await batch.commit();
+        snap = await votesCol(id).limit(400).get();
+      }
       // reset count
       await gamesCol().doc(id).update({ count: 0 });
 
@@ -259,7 +251,7 @@ document.getElementById('resetSelected').onclick = async ()=>{
       } catch (e) { console.error(e); alert('Add failed. Check Firestore rules allow create.'); }
     };
 
-    // Save Selected
+    // Save Selected (toggle featured)
     document.getElementById('saveSelected').onclick = async () => {
       const chks = [...adminPanel.querySelectorAll('.featChk')];
       const selected = chks.filter(c => c.checked).map(c => c.getAttribute('data-id'));
@@ -271,7 +263,7 @@ document.getElementById('resetSelected').onclick = async ()=>{
       } catch (e) { console.error(e); alert('Saving failed.'); }
     };
 
-    // Import (optional placeholder – reads JSON array from prompt)
+    // Import (optional) – paste JSON
     document.getElementById('importGames').onclick = async () => {
       const raw = prompt('Paste JSON like: [{"name":"Title","url":"https://..."}]');
       if (!raw) return;
@@ -294,14 +286,18 @@ document.getElementById('resetSelected').onclick = async ()=>{
     };
 
     // ========== Reset buttons ==========
-    // Reset Selected (votes + live log for checked items)
+    // Reset Selected (ONLY unselect; no votes/log deletion)
     document.getElementById('resetSelected').onclick = async () => {
       const chks = [...adminPanel.querySelectorAll('.featChk')];
       const ids = chks.filter(c => c.checked).map(c => c.getAttribute('data-id'));
       if (ids.length === 0) return alert('Select at least one item.');
-      if (!confirm('Reset votes and live comments for SELECTED games?')) return;
-      await clearVotesForGames(ids);
-      alert('Selected reset complete.');
+      if (!confirm('Remove these games from selection (users will no longer see them)?')) return;
+      try {
+        const batch = db.batch();
+        ids.forEach(id => batch.update(gamesCol().doc(id), { featured: false }));
+        await batch.commit();
+        alert('Selected games removed from user view.');
+      } catch (e) { console.error(e); alert('Reset Selected failed.'); }
     };
 
     // Reset Votes (all games, keep live log)
@@ -318,7 +314,7 @@ document.getElementById('resetSelected').onclick = async ()=>{
       alert('Live votes log cleared.');
     };
 
-    // Tip area
+    // Tip
     document.getElementById('votersBox').innerHTML =
       'Tip: use the buttons above to manage rounds.';
   }
@@ -345,9 +341,10 @@ document.getElementById('resetSelected').onclick = async ()=>{
       topStats.innerHTML = '';
       grid.innerHTML = '<div class="subtle">No items are selected right now. Check back later.</div>';
     } else {
+      // keep order stable by createdAt (no jumping after votes)
       visible.sort((a,b)=> (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
       renderTopBars(visible);
-      grid.innerHTML = visible.map((it, i) => reelCard(it, i)).join('');
+      grid.innerHTML = visible.map((it) => reelCard(it)).join('');
       if (window.instgrm && instgrm.Embeds) instgrm.Embeds.process();
 
       // Buttons
@@ -415,3 +412,4 @@ document.getElementById('resetSelected').onclick = async ()=>{
 
   subscribe();
 })();
+
